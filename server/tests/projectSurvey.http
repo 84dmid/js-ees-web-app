@@ -1,0 +1,36 @@
+# сейчас модуль не используется, оставлен на будущее, если надо будет обновлять состав проекта.
+
+### Получить все исследования, входящие в состав иследование, входящее в состав проекта
+GET /api/project_survey/admin/project/31/get_all HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
+
+### Получить одино иследование, входящее в состав проекта
+GET /api/project_survey/admin/project/31/get_one/24 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
+
+### Создать новыое иследование, входящее в состав проекта
+POST /api/project_survey/create HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
+Content-type: application/json; charset=utf-8
+
+{
+    "survey": "иследование, входящее в состав проекта"
+}
+
+### Обновить иследование, входящее в состав проекта
+PUT /api/project_survey/update/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1AbWFpbC5ydSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY5OTkzMTQ5OSwiZXhwIjoxNzAwMDE3ODk5fQ.wdNC-ohc9-bwbvd5bUIf3quAv__O-krboCVKAbHh06I
+Content-type: application/json; charset=utf-8
+
+{
+    "survey": "иследование, входящее в состав проекта (new)"
+}
+
+### Удалить иследование, входящее в состав проекта
+DELETE /api/project_survey/delete/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA

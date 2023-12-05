@@ -1,0 +1,36 @@
+### Получить все виды исследований
+GET /api/survey/get_all HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwMTQ0MDk0Mn0.OZMYwt55fqH7SUPpTkOI3p44Aeqd-k0TBK_D6WYgr9g
+
+### Получить один вид исследований
+GET /api/survey/get_one/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwMTQ0MDk0Mn0.OZMYwt55fqH7SUPpTkOI3p44Aeqd-k0TBK_D6WYgr9g
+
+### Создать новый вид исследований
+POST /api/survey/create HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE
+Content-type: application/json; charset=utf-8
+
+{
+    "order": 1,
+    "name": "Исследование загрязнения грунта радионуклидами (ЕРН)"
+}
+
+### Обновить вид исследований
+PUT /api/survey/update/3 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE
+Content-type: application/json; charset=utf-8
+
+{
+    "order": 3,
+    "name": "Исследование биологического загрязнения грунта"
+}
+
+### Удалить вид исследований
+DELETE /api/survey/delete/4 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE

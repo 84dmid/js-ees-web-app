@@ -1,0 +1,80 @@
+### Временая регистрация пользователя (без логина и пароля)
+POST /api/user/temp_sign_up HTTP/1.1
+Host: localhost:7000
+Content-type: application/json; charset=utf-8
+
+### Регистрация пользователя
+POST /api/user/sign_up HTTP/1.1
+Host: localhost:7000
+Content-type: application/json; charset=utf-8
+
+{
+    "name": "новый пользователь",
+    "email": "user111111@mail.ru",
+    "password": "123456"
+}
+
+### Аутентификация (вход) пользователя
+POST /api/user/login HTTP/1.1
+Host: localhost:7000
+Content-type: application/json; charset=utf-8
+
+{
+    "email": "user@mail.ru",
+    "password": "123456"
+}
+
+### Аутентификация (вход) администратора
+POST /api/user/login HTTP/1.1
+Host: localhost:7000
+Content-type: application/json; charset=utf-8
+
+{
+    "email": "admin@mail.ru",
+    "password": "123456"
+}
+
+### Проверка подлинности jwt токена, обновление (перевыпуск) токена
+GET /api/user/check HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MDA4Mjg0ODZ9.36tnk6epy9WilCwGyYHWN6ZtyuObz0PFd1ZEbdzNixY
+
+### Получить всех пользователей
+GET /api/user/get_all HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MDA4Mjg0ODZ9.36tnk6epy9WilCwGyYHWN6ZtyuObz0PFd1ZEbdzNixY
+### Получить одного пользователя
+GET /api/user/get_one/2 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MDA4Mjg0ODZ9.36tnk6epy9WilCwGyYHWN6ZtyuObz0PFd1ZEbdzNixY
+
+### Создать нового пользователя
+POST /api/user/create HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImVtYWlsIjoiYWRtaW5AbWFpbC5ydSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcwMDYzNjc4N30.wY6AUC3-DKysKWh-XkcyGEUF_IOiN6ZrjNRUZw1DGOU
+Content-type: application/json; charset=utf-8
+
+{
+    "name": "новый пользователь",
+    "email": "admin2@mail.ru",
+    "password": "123456",
+    "role": "ADMIN"
+}
+
+### Обновить пользователя
+PUT /api/user/update/10 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImVtYWlsIjoiYWRtaW5AbWFpbC5ydSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcwMDYzNjc4N30.wY6AUC3-DKysKWh-XkcyGEUF_IOiN6ZrjNRUZw1DGOU
+Content-type: application/json; charset=utf-8
+
+{
+    "name": "новый пользователь",
+    "email": "user2@mail.ru",
+    "password": "123456",
+    "role": "USER"
+}
+
+### Удалить пользователя
+DELETE /api/user/delete/10 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImVtYWlsIjoiYWRtaW5AbWFpbC5ydSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcwMDYzNjc4N30.wY6AUC3-DKysKWh-XkcyGEUF_IOiN6ZrjNRUZw1DGOU

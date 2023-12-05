@@ -1,0 +1,24 @@
+### Получить корзину
+GET /api/basket/get_one HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+
+### Добавить в корзину
+PUT /api/basket/variant/1/append/3 HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+
+### Удалить из корзины
+PUT /api/basket/variant/1/remove HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+
+### Очистить корзину
+PUT /api/basket/clear HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+
+### Удалить корзину
+DELETE /api/basket/delete HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg

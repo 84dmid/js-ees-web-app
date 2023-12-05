@@ -1,0 +1,36 @@
+### Получить список всех типов объектов капитального строительства (линейный, нелинейный)
+GET /api/object_type/get_all HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+
+### Получить один тип объекта капитального строительства
+GET /api/object_type/get_one/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+
+### Создать новый тип объекта капитального строительства
+POST /api/object_type/create HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "order": 1,
+    "name": "Линейный"
+}
+
+### Обновить тип объекта капитального строительства
+PUT /api/object_type/update/2 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "order": 2,
+    "name": "Линейный"
+}
+
+### Удалить тип объекта капитального строительства
+DELETE /api/object_type/delete/3 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
