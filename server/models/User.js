@@ -15,18 +15,25 @@ class User {
     }
 
     async getByEmail(email) {
-        const user = await UserMapping.findOne({where: {email}});
+        const user = await UserMapping.findOne({ where: { email } });
         if (!user) {
             throw new Error('Пользователь не найден в БД');
         }
         return user;
     }
-    
+
     async create(data) {
-        const user = await UserMapping.create(data);
+        const { name, email, password, role } = data;
+        console.log(data);
+        const check = await UserMapping.findOne({ where: { email: email } });
+        console.log(check);
+        if (check) {
+            throw new Error('Пользователь уже существует');
+        }
+        const user = await UserMapping.create(name, email, password, role);
         return user;
     }
-    
+
     async update(id, data) {
         const user = await UserMapping.findByPk(id);
         if (!user) {
@@ -35,7 +42,7 @@ class User {
         await user.update(data);
         return user;
     }
-    
+
     async delete(id) {
         const user = await UserMapping.findByPk(id);
         if (!user) {

@@ -7,10 +7,21 @@ import ObjectTypeController from '../controllers/ObjectType.js';
 
 const router = new express.Router();
 
-router.get('/get_all', authMiddleware, adminMiddleware, ObjectTypeController.getAll);
-router.get('/get_one/:id([0-9]+)', authMiddleware, adminMiddleware, ObjectTypeController.getOne);
+router.get('/get_all', ObjectTypeController.getAll);
+router.get('/get_one/:id([0-9]+)', ObjectTypeController.getOne);
+
 router.post('/create', authMiddleware, adminMiddleware, ObjectTypeController.create);
-router.put('/update/:id([0-9]+)', authMiddleware, adminMiddleware, ObjectTypeController.update);
-router.delete('/delete/:id([0-9]+)', authMiddleware, adminMiddleware, ObjectTypeController.delete);
+router.put(
+    '/update/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    ObjectTypeController.update
+);
+router.delete(
+    '/delete/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    ObjectTypeController.delete
+);
 
 export default router;
