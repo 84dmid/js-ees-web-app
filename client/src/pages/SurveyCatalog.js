@@ -1,22 +1,13 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { observer } from 'mobx-react-lite';
 
 import { AppContext } from '../components/AppContext.js';
-import { fetchSurveys } from '../http/catalogAPI.js';
 import SurveyFilterBar from '../components/SurveyFilterBar.js';
+import SurveyList from '../components/SurveyList.js';
 
 const SurveyCatalog = observer(() => {
-    const { catalog, isLoading } = useContext(AppContext);
-
-    const [surveysFetching, setSurveysFetching] = useState(true);
-
-    useEffect(() => {
-        fetchSurveys()
-            .then((data) => (catalog.surveys = data))
-            .finally(() => setSurveysFetching(false));
-        // eslint-disable-next-line
-    }, []);
+    const { catalog } = useContext(AppContext);
 
     return (
         <Container fluid>
@@ -29,8 +20,7 @@ const SurveyCatalog = observer(() => {
                     />
                 </Col>
                 <Col md={9} className="mb-3">
-                    <h3 className="text-muted"> Каталог исследований</h3>
-                    {surveysFetching ? (isLoading.state = true) : <div>surveysBar</div>}
+                    <SurveyList />
                 </Col>
             </Row>
         </Container>

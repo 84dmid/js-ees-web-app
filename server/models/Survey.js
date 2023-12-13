@@ -11,22 +11,28 @@ import { Handler as HandlerMapping } from './mapping.js';
 import { VariantProp as VariantPropMapping } from './mapping.js';
 
 class Survey {
-    async getAll() {
+    async getAll({ categoryId, subcategoryId }) {
+        const where = {};
+        if (categoryId) where.categoryId = categoryId;
+        if (subcategoryId) where.subcategoryId = subcategoryId;
+
         const surveys = await SurveyMapping.findAll({
+            where,
+            order: [
+                'categoryId',
+                'subcategoryId',
+                'order',
+                [{ model: VariantMapping }, 'objectTypeId'],
+            ],
             include: [
+                { model: CategoryMapping, as: 'category' },
+                { model: SubcategoryMapping, as: 'subcategory' },
                 {
                     model: VariantMapping,
-                    // include: [
-                    //     { model: CategoryMapping, as: 'category' },
-                    //     { model: CategoryMapping, as: 'category' },
-                    //     { model: SubcategoryMapping, as: 'subcategory' },
-                    //     { model: NormDocMapping, as: 'normDoc' },
-                    //     { model: JustificationMapping, as: 'justification' },
-                    //     { model: UnitMapping, as: 'unit' },
-                    //     { model: ObjectTypeMapping, as: 'objectType' },
-                    //     { model: HandlerMapping, as: 'handler' },
-                    //     { model: VariantPropMapping, as: 'variantProps' },
-                    // ],
+                    include: [
+                        { model: UnitMapping, as: 'unit' },
+                        { model: ObjectTypeMapping, as: 'objectType' },
+                    ],
                 },
             ],
         });

@@ -16,7 +16,7 @@ Content-type: application/json; charset=utf-8
 
 {
     "order": 1,
-    "name": "Радиационные исследования"
+    "name": "Платные спраки"
 }
 
 ### Обновить подкатегорию исследований

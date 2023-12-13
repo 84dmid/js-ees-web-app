@@ -16,7 +16,7 @@ Content-type: application/json; charset=utf-8
 
 {
     "order": 2,
-    "description": "По гост",
+    "description": "По линейн",
     "price": null,
     "normDocId": 1,
     "justificationId": 1,
@@ -24,7 +24,7 @@ Content-type: application/json; charset=utf-8
     "subcategoryId": 1,
     "unitId": 1,
     "surveyId": 1,
-    "objectTypeId": 1,
+    "objectTypeId": 2,
     "handlerId": null,
     "props": [
         {

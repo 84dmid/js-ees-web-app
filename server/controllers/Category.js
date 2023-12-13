@@ -1,8 +1,7 @@
-import CategoryModel from "../models/Category.js";
-import AppError from "../errors/AppError.js";
+import CategoryModel from '../models/Category.js';
+import AppError from '../errors/AppError.js';
 
-class Category{
-
+class Category {
     async getAll(req, res, next) {
         try {
             const categories = await CategoryModel.getAll();
@@ -11,11 +10,20 @@ class Category{
             next(AppError.badRequest(error.message));
         }
     }
-    
+
+    async getInclusion(req, res, next) {
+        try {
+            const categories = await CategoryModel.getInclusion();
+            res.json(categories);
+        } catch (error) {
+            next(AppError.badRequest(error.message));
+        }
+    }
+
     async getOne(req, res, next) {
         try {
             if (!req.params.id) {
-                throw new Error('Не указан id категории')
+                throw new Error('Не указан id категории');
             }
             const category = await CategoryModel.getOne(req.params.id);
             res.json(category);
@@ -23,7 +31,7 @@ class Category{
             next(AppError.badRequest(error.message));
         }
     }
-    
+
     async create(req, res, next) {
         try {
             const category = await CategoryModel.create(req.body);
@@ -32,10 +40,10 @@ class Category{
             next(AppError.badRequest(error.message));
         }
     }
-    
+
     async update(req, res, next) {
         if (!req.params.id) {
-            throw new Error('Не указан id категории')
+            throw new Error('Не указан id категории');
         }
         try {
             const category = await CategoryModel.update(req.params.id, req.body);
@@ -44,10 +52,10 @@ class Category{
             next(AppError.badRequest(error.message));
         }
     }
-    
+
     async delete(req, res, next) {
         if (!req.params.id) {
-            throw new Error('Не указан id категории')
+            throw new Error('Не указан id категории');
         }
         try {
             const category = await CategoryModel.delete(req.params.id);
@@ -56,7 +64,6 @@ class Category{
             next(AppError.badRequest(error.message));
         }
     }
-
 }
 
 export default new Category();
