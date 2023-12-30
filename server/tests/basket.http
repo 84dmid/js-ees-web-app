@@ -1,24 +1,30 @@
 ### Получить корзину
 GET /api/basket/get_one HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
 
 ### Добавить в корзину
-PUT /api/basket/variant/1/append/3 HTTP/1.1
+PUT /api/basket/variant/7/append/3 HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
+
+
+### Обновить вариант в корзине (количество)
+PUT /api/basket/variant/7/update/7 HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A135.C6aYKdB%2Fz1fDG5du1OGzRQRAFqls9KSvCgPu99sRjOg
 
 ### Удалить из корзины
-PUT /api/basket/variant/1/remove HTTP/1.1
+PUT /api/basket/variant/6/remove HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Cookie: basketId=s%3A4.FRzJuebhWhb9dud6Kazp%2FpP0hpIQauHs3XW7Z5M5wQ0
 
 ### Очистить корзину
 PUT /api/basket/clear HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
 
 ### Удалить корзину
-DELETE /api/basket/delete HTTP/1.1
+DELETE /api/basket/delete/ HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Cookie: basketId=s%3A132.fbShZ0sdmeRKo8lQ86DwBd7eD2MsiOy68B9SiYtKA2

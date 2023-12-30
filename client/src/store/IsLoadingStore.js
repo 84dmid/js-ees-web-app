@@ -12,7 +12,7 @@ class IsLoadingStore {
     }
 
     set state(isLoading) {
-        this.isLoading = isLoading;
+        this._isLoading = isLoading;
     }
 }
 

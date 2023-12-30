@@ -2,9 +2,18 @@
 GET /api/category/get_all HTTP/1.1
 Host: localhost:7000
 
-### Список всех категорий со всеми включениями
-GET /api/category/get_inclusion HTTP/1.1
+### Список всех категорий со всеми включениями только prodaction
+GET /api/category/content?variantFilter[]=8 HTTP/1.1
 Host: localhost:7000
+
+
+### Список всех категорий со всеми включениями (полный список для редактора)
+GET /api/category/full_content HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+
+
+
 
 ### Получить одну категорию
 GET /api/category/get_one/3 HTTP/1.1
@@ -17,19 +26,33 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "name": "Справки ЦГМС",
+    "name": "Лабораторные исследования",
     "order": 2
 }
 
 ### Обновить категорию
-PUT /api/category/update/3 HTTP/1.1
+PUT /api/category/update/1 HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
 Content-type: application/json; charset=utf-8
 
 {
-    "name": "Лабораторные исследования"
+    "name": "Платные документы",
+    "order": 1
 }
+
+### Переупорядочить категорию вверх
+PUT /api/category/move_up/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+### Переупорядочить категорию вниз
+PUT /api/category/move_down/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
 
 ### Удалить категорию
 DELETE /api/category/delete/3 HTTP/1.1

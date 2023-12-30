@@ -1,13 +1,29 @@
 import React from 'react';
 
-const CategoryItem = ({ category }) => {
+import SubcategoryItem from './SubcategoryItem.js';
+
+const CategoryItem = ({ name, subcategories }) => {
+    const subcategoryList = subcategories.map((subcategory) => {
+        return (
+            <SubcategoryItem
+                key={subcategory.id + 'subcategory'}
+                name={subcategory.name}
+                surveys={subcategory.surveys}
+            />
+        );
+    });
+
     return (
-        <tr>
-            <td className="bg-light"></td>
-            <td colSpan={6} className="bg-light">
-                <h4 className="text-muted">{category.name}</h4>
-            </td>
-        </tr>
+        <>
+            <tr className="table-light">
+                <td></td>
+                <td colSpan={5}>
+                    {/* <div style={{ fontSize: '0.875em' }}>Категория исследований</div> */}
+                    <h5>{name}</h5>
+                </td>
+            </tr>
+            {subcategoryList}
+        </>
     );
 };
 

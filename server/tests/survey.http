@@ -18,21 +18,41 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 3,
-    "name": "Справки ЦГМС",
-    "categoryId": 2
+    "order": 1,
+    "name": "Измерение уровня МЭД-гамма излучения на участке",
+    "subcategoryId": 3
 }
 
 ### Обновить вид исследований
-PUT /api/survey/update/5 HTTP/1.1
+PUT /api/survey/update/1 HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 5,
-    "name": "Справки ЦГМС",
-    "categoryId": 2
+    "order": 1,
+    "name": "Иссдежования химического загрязнения грунта",
+    "subcategoryId": 2
+}
+
+### Переупорядочить исследование вверх
+PUT /api/survey/move_up/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "subcategoryId": "1"
+}
+
+### Переупорядочить исследование вниз
+PUT /api/survey/move_down/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "subcategoryId": "1"
 }
 
 ### Удалить вид исследований

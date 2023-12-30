@@ -15,8 +15,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 1,
-    "name": "Платные спраки"
+    "order": 2,
+    "name": "Радиационные исследования",
+    "categoryId": "2"
 }
 
 ### Обновить подкатегорию исследований
@@ -26,8 +27,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 2,
-    "name": "Исследования грунтов"
+    "order": 1,
+    "name": "Спрвки ЦГМС",
+    "categoryId": "1"
+}
+
+### Переупорядочить субкатегорию вверх
+PUT /api/subcategory/move_up/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "categoryId": "1"
+}
+
+### Переупорядочить субкатегорию вниз
+PUT /api/subcategory/move_down/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "categoryId": "1"
 }
 
 ### Удалить подкатегорию исследований

@@ -30,7 +30,7 @@ class User {
         if (check) {
             throw new Error('Пользователь уже существует');
         }
-        const user = await UserMapping.create(name, email, password, role);
+        const user = await UserMapping.create({ name, email, password, role });
         return user;
     }
 

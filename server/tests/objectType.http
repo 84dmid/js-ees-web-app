@@ -16,18 +16,20 @@ Content-type: application/json; charset=utf-8
 
 {
     "order": 1,
-    "name": "Линейный"
+    "name": "Нелинейный",
+    "description": "Только для нелинейных объектов"
 }
 
 ### Обновить тип объекта капитального строительства
-PUT /api/object_type/update/2 HTTP/1.1
+PUT /api/object_type/update/1 HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 2,
-    "name": "Линейный"
+    "order": 1,
+    "name": "Нелинейный",
+    "description": "Только для нелинейных объектов"
 }
 
 ### Удалить тип объекта капитального строительства

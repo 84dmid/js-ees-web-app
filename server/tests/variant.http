@@ -4,7 +4,7 @@ Host: localhost:7000
 Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
 
 ### Получить один вариант исследований
-GET /api/variant/get_one/3 HTTP/1.1
+GET /api/variant/get_one/1 HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
 
@@ -16,17 +16,35 @@ Content-type: application/json; charset=utf-8
 
 {
     "order": 2,
-    "description": "По линейн",
+    "description": "Авторасчёт",
+    "price": 450,
+    "normDocId": 1,
+    "justificationId": 1,
+    "unitId": 1,
+    "surveyId": 6,
+    "objectTypeId": 1,
+    "handlerId": null
+}
+
+
+
+### Обновить вариант исследований
+PUT /api/variant/update/2 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE
+Content-type: application/json; charset=utf-8
+
+{
+    "order": 2,
+    "description": "Ручной расчёт",
     "price": null,
     "normDocId": 1,
     "justificationId": 1,
-    "categoryId": 1,
-    "subcategoryId": 1,
     "unitId": 1,
     "surveyId": 1,
-    "objectTypeId": 2,
+    "objectTypeId": 1,
     "handlerId": null,
-    "props": [
+    "variantProps": [
         {
             "order": 1,
             "description": "Количество точек проб, из которых отбитается объединённая (смешанная) проба",
@@ -44,42 +62,26 @@ Content-type: application/json; charset=utf-8
     ]
 }
 
-
-
-### Обновить вариант исследований
-PUT /api/variant/update/4 HTTP/1.1
+### Переупорядочить вариант вверх
+PUT /api/variant/move_up/1 HTTP/1.1
 Host: localhost:7000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDQxMTI4fQ.Lr2bDW6Yhm7DbDTX0V8KP1CyHmuIn4X9WZOEsWDGRzE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
 Content-type: application/json; charset=utf-8
 
 {
-    "order": 2,
-    "description": "Ручной расчёт",
-    "price": null,
-    "normDocId": 1,
-    "justificationId": 1,
-    "categoryId": 1,
-    "subcategoryId": 1,
-    "unitId": 1,
     "surveyId": 1,
-    "objectTypeId": 1,
-    "handlerId": null,
-    "props": [
-        {
-            "order": 1,
-            "description": "Количество точек проб, из которых отбитается объединённая (смешанная) проба",
-            "unit": "точечная проба",
-            "price": 200,
-            "quantity": "5"
-        },
-        {
-            "order": 2,
-            "description": "рh солевой вытяжки; свинец (валовая форма); кадмий (валовая форма); цинк (валовая форма); медь (валовая форма); мышьяк (валовая форма); ртуть (валовая форма); бенз(а)пирен (валовая форма); никель (валовая форма); нефтепродукты; гумус; общий азот",
-            "unit": "список определяемых показателей",
-            "price": 10000,
-            "quantity": 1
-        }
-    ]
+    "objectTypeId": 1
+}
+
+### Переупорядочить вариант вниз
+PUT /api/variant/move_down/1 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBtYWlsLnJ1Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzAxNDM1MDc2fQ.gai7W4SvWDJ8_q2KgfBa5z_Py_w9fzb7xga0Ql_yH80
+Content-type: application/json; charset=utf-8
+
+{
+    "surveyId": 1,
+    "objectTypeId": 1
 }
 
 ### Удалить вариант исследований

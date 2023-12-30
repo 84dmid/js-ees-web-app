@@ -2,23 +2,30 @@ import React, { useContext } from 'react';
 import { Container, Navbar, Nav, Button, Spinner } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { logout } from '../http/userAPI.js';
 
+import userAPI from '../http/userAPI.js';
 import { AppContext } from './AppContext.js';
 
+function formatNumberWithSpaces(number) {
+    return number.toLocaleString('ru-RU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
+}
+
 const NavBar = observer(() => {
-    const { user, isLoading } = useContext(AppContext);
+    const { basket, user, isLoading } = useContext(AppContext);
 
     const navigate = useNavigate();
 
     const handleLogout = (event) => {
-        logout();
+        userAPI.logout();
         user.logout();
         navigate('/login', { replace: true });
     };
 
     return (
-        <Navbar bg="dark" variant="dark">
+        <Navbar bg="dark" variant="dark" className="mb-2">
             <Container fluid>
                 <NavLink to="/" className="navbar-brand">
                     Инженерно-экологические изыскания
@@ -37,26 +44,31 @@ const NavBar = observer(() => {
                     </div>
                 </NavLink>
                 <Nav className="ml-auto">
-                    <NavLink to="/" className="nav-link">
+                    <NavLink to="/" className="nav-link text-center">
                         Каталог
                     </NavLink>
-                    <NavLink to="/research_processing" className="nav-link">
+                    {/* <NavLink to="/research_processing" className="nav-link text-center">
                         Обработка результатов исследований
-                    </NavLink>
-                    <NavLink to="/basket" className="nav-link">
-                        Корзина
-                    </NavLink>
-                    {/* <NavLink to="/contacts" className="nav-link">
-                        Контакты
                     </NavLink> */}
+                    <NavLink to="/basket" className="nav-link text-center">
+                        Корзина{' '}
+                        {basket.count ? (
+                            <span style={{ fontSize: '0.8em', whiteSpace: 'nowrap' }}>
+                                <br /> {basket.count} /{' '}
+                                {formatNumberWithSpaces(basket.sum)} ₽
+                            </span>
+                        ) : (
+                            ''
+                        )}
+                    </NavLink>
                     {user.isAuth && user.isAdmin && (
-                        <NavLink to="/admin" className="nav-link">
+                        <NavLink to="/admin" className="nav-link text-center">
                             Панель управления
                         </NavLink>
                     )}
                     {user.isAuth ? (
                         <>
-                            <NavLink to="/user" className="nav-link">
+                            <NavLink to="/user" className="nav-link text-center">
                                 Личный кабинет
                             </NavLink>
                         </>
@@ -67,9 +79,7 @@ const NavBar = observer(() => {
                             </NavLink>
                         </>
                     )}
-                    {user.isAuth && (
-                        <Button onClick={handleLogout}>Выйти</Button>
-                    )}
+                    {user.isAuth && <Button onClick={handleLogout}>Выйти</Button>}
                 </Nav>
             </Container>
         </Navbar>

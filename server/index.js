@@ -22,7 +22,8 @@ const start = async () => {
         await sequelize.authenticate();
         // await sequelize.drop()
         await sequelize.sync({ alter: true });
-        // await sequelize.sync()
+        // await sequelize.sync({ force: true });
+        // await sequelize.sync();
         app.listen(PORT, () => console.log('Сервер запущен на порту', PORT));
     } catch (error) {
         console.log('Error:', error);

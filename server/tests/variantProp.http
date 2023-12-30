@@ -1,5 +1,5 @@
 ### Получить все свойства варианта исследований
-GET /api/variant/1/property/get_all HTTP/1.1
+GET /api/variant/2/property/get_all HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
 

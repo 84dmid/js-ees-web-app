@@ -1,55 +1,104 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
-const VariantItem = ({ surveyId, id, description, unit, unitPrice }) => {
-    const [price, setPrice] = useState(0);
-    const getPrice = (event) => {
-        if (event.target.value < 0) return;
-        setPrice(event.target.value * unitPrice);
+import basketAPI from '../http/basketAPI.js';
+import { AppContext } from '../components/AppContext.js';
+
+function formatNumberWithSpaces(number) {
+    return number.toLocaleString('ru-RU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
+}
+
+const VariantItem = observer(({ surveyId, id, description, unit, unitPrice }) => {
+    const { basket } = useContext(AppContext);
+    const [quantity, setQuantity] = useState(1);
+    const [isChecked, setIsChecked] = useState(false);
+
+    const handleChangeQuantity = (event) => {
+        if (event.target.value <= 0) return;
+        setQuantity(event.target.value); // срабатывает асинхронно, сразу использовать quantity нельзя
+        if (isChecked) {
+            basketAPI.update(id, event.target.value).then((data) => {
+                basket.variants = data.basketVariants;
+            });
+        }
     };
 
-    function clickRadio(event) {
-        const radio = event.target;
-        const radios = document.querySelectorAll(
-            "input[type='radio'][name='" + radio.name + "']"
-        );
-        for (var i = 0; i < radios.length; i++) {
-            if (radios[i] !== radio) radios[i].BeforeCheck = false;
+    const handleCheckVariant = (event) => {
+        setIsChecked(event.target.checked); // срабатывает асинхронно, сразу использовать checked нельзя
+        if (event.target.checked && quantity > 0) {
+            basketAPI
+                .append(id, quantity)
+                .then((data) => {
+                    basket.variants = data.basketVariants;
+                })
+                .catch((error) => console.error(`Append in basket error: ${error}`));
+        } else if (!event.target.checked || quantity <= 0) {
+            basketAPI
+                .remove(id)
+                .then((data) => {
+                    basket.variants = data.basketVariants;
+                })
+                .catch((error) => console.error(`Remove from basket error: ${error}`));
         }
+    };
 
-        if (radio.BeforeCheck) radio.checked = false;
-        radio.BeforeCheck = radio.checked;
-    }
+    useEffect(() => {
+        const basketVariant = basket.variants.find((item) => item.variantId === id);
+        if (basketVariant) {
+            setIsChecked(true);
+            setQuantity(basketVariant.quantity);
+        } else {
+            setIsChecked(false);
+        }
+        // eslint-disable-next-line
+    }, [basket.variants]);
 
     return (
         <tr key={id}>
             <td className="text-center align-middle">
                 <Form.Check
                     inline
-                    type="radio"
+                    type="checkbox"
                     id={id}
-                    name={surveyId + 'survey'}
+                    name={surveyId}
                     className="m-2 mt-0 mb-0"
-                    onClick={(event) => clickRadio(event)}
+                    checked={isChecked}
+                    onChange={handleCheckVariant}
                 />
             </td>
 
             <td className="align-middle">
                 <label htmlFor={id}>{description}</label>
             </td>
+            <td className="text-center align-middle">
+                <NavLink
+                    to={`/variant/${id}`}
+                    className="btn btn-outline-primary pt-0 pb-1"
+                >
+                    {'>'}
+                </NavLink>
+            </td>
             <td className="text-center align-middle">{unit}</td>
-            <td className="text-center align-middle">{unitPrice} руб</td>
             <td className="text-center align-middle">
                 <Form.Control
                     type="number"
-                    defaultValue={0}
+                    id={id + 'quantity'}
                     className="pt-0 pb-0"
-                    onChange={(event) => getPrice(event)}
+                    value={quantity}
+                    onChange={(event) => handleChangeQuantity(event)}
+                    min={1}
                 />
             </td>
-            <td className="text-center fw-bold align-middle">{price} руб</td>
+            <td className="text-center fw-bold align-middle">
+                {formatNumberWithSpaces(unitPrice * quantity)} ₽
+            </td>
         </tr>
     );
-};
+});
 
 export default VariantItem;

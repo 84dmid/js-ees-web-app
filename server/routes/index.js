@@ -1,10 +1,10 @@
 import express from 'express';
 
 import basket from './basket.js';
-import category from './category.js'
-import handler from './handler.js'
-import justification from './justification.js'
-import normDoc from './normDoc.js'
+import category from './category.js';
+import handler from './handler.js';
+// import justification from './justification.js'
+// import normDoc from './normDoc.js'
 import objectType from './objectType.js';
 import project from './project.js';
 // import projectSurvey from './projectSurvey.js'; // на будущее
@@ -19,8 +19,8 @@ const router = new express.Router();
 router.use('/basket', basket);
 router.use('/category', category);
 router.use('/handler', handler);
-router.use('/justification', justification);
-router.use('/norm_doc', normDoc);
+// router.use('/justification', justification);
+// router.use('/norm_doc', normDoc);
 router.use('/object_type', objectType);
 router.use('/project', project);
 // router.use('/project_survey', projectSurvey); // на будущее

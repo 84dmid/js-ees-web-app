@@ -55,6 +55,9 @@ const Variant = sequelize.define('variant', {
     order: { type: DataTypes.INTEGER, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
+    normDoc: { type: DataTypes.STRING },
+    justification: { type: DataTypes.STRING },
+    isProduction: { type: DataTypes.BOOLEAN, defaultValue: false },
 });
 
 const Basket = sequelize.define('basket', {
@@ -65,15 +68,15 @@ const BasketVariant = sequelize.define('basketVariant', {
     quantity: { type: DataTypes.INTEGER, defaultValue: 1 },
 });
 
-const NormDoc = sequelize.define('normDoc', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
-});
+// const NormDoc = sequelize.define('normDoc', {
+//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+//     name: { type: DataTypes.STRING, allowNull: false },
+// });
 
-const Justification = sequelize.define('justification', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    text: { type: DataTypes.STRING, allowNull: false },
-});
+// const Justification = sequelize.define('justification', {
+//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+//     text: { type: DataTypes.STRING, allowNull: false },
+// });
 
 const Unit = sequelize.define('unit', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -113,11 +116,11 @@ const Handler = sequelize.define('handler', {
 
 const VariantProp = sequelize.define('variantProp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    order: { type: DataTypes.INTEGER },
-    description: { type: DataTypes.STRING, allowNull: false },
-    unit: { type: DataTypes.STRING, allowNull: false },
-    price: { type: DataTypes.INTEGER },
-    quantity: { type: DataTypes.INTEGER },
+    order: { type: DataTypes.INTEGER, allowNull: false },
+    description: { type: DataTypes.TEXT, defaultValue: '' },
+    unit: { type: DataTypes.STRING, defaultValue: '' },
+    price: { type: DataTypes.INTEGER, defaultValue: 0 },
+    quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 User.hasMany(Project, { onDelete: 'CASCADE' });
@@ -138,25 +141,26 @@ BasketVariant.belongsTo(Variant);
 Basket.hasMany(BasketVariant);
 BasketVariant.belongsTo(Basket);
 
-NormDoc.hasMany(Variant, { onDelete: 'RESTRICT' });
-Variant.belongsTo(NormDoc);
+// // many-to-many
+// Survey.belongsToMany(Basket, { through: BasketVariant, onDelete: 'CASCADE' });
+// Basket.belongsToMany(Survey, { through: BasketVariant, onDelete: 'CASCADE' });
+// // super many-to-many https://sequelize.org/master/manual/advanced-many-to-many.html
+// Survey.hasMany(BasketVariant);
+// BasketVariant.belongsTo(Survey);
 
-Justification.hasMany(Variant, { onDelete: 'RESTRICT' });
-Variant.belongsTo(Justification);
+// NormDoc.hasMany(Variant, { onDelete: 'RESTRICT' });
+// Variant.belongsTo(NormDoc);
+
+// Justification.hasMany(Variant, { onDelete: 'RESTRICT' });
+// Variant.belongsTo(Justification);
 
 Unit.hasMany(Variant, { onDelete: 'RESTRICT' });
 Variant.belongsTo(Unit);
 
-Category.hasMany(Variant, { onDelete: 'RESTRICT' });
-Variant.belongsTo(Category);
+Category.hasMany(Subcategory, { onDelete: 'RESTRICT' }); // 1
+Subcategory.belongsTo(Category);
 
-Category.hasMany(Survey, { onDelete: 'RESTRICT' });
-Survey.belongsTo(Category);
-
-Subcategory.hasMany(Variant, { onDelete: 'RESTRICT' });
-Variant.belongsTo(Subcategory);
-
-Subcategory.hasMany(Survey, { onDelete: 'RESTRICT' });
+Subcategory.hasMany(Survey, { onDelete: 'RESTRICT' }); // 2
 Survey.belongsTo(Subcategory);
 
 Survey.hasMany(Variant, { onDelete: 'RESTRICT' });
@@ -179,8 +183,8 @@ export {
     Variant,
     Basket,
     BasketVariant,
-    NormDoc,
-    Justification,
+    // NormDoc,
+    // Justification,
     Unit,
     Category,
     Subcategory,

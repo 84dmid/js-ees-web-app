@@ -13,13 +13,13 @@ class ObjectType {
         }
         return objectType;
     }
-    
+
     async create(data) {
-        const {name, order} = data;
-        const objectType = await ObjectTypeMapping.create({name, order});
+        const { name, order, description } = data;
+        const objectType = await ObjectTypeMapping.create({ name, order, description });
         return objectType;
     }
-    
+
     async update(id, data) {
         const objectType = await ObjectTypeMapping.findByPk(id);
         if (!objectType) {
@@ -28,13 +28,14 @@ class ObjectType {
         const changes = {};
         if (data.order) changes.order = data.order;
         if (data.name) changes.name = data.name;
+        if (data.description) changes.description = data.description;
 
         if (Object.keys(changes)) {
             await objectType.update(changes);
         }
         return objectType;
     }
-    
+
     async delete(id) {
         const objectType = await ObjectTypeMapping.findByPk(id);
         if (!objectType) {

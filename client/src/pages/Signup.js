@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import { AppContext } from '../components/AppContext.js';
 import { Container, Card, Form, Button } from 'react-bootstrap';
-import { signup } from '../http/userAPI.js';
+import userAPI from '../http/userAPI.js';
 
 const Signup = observer(() => {
     const { user } = useContext(AppContext);
@@ -24,14 +24,14 @@ const Signup = observer(() => {
         event.preventDefault();
         const email = event.target.email.value.trim();
         const password = event.target.password.value.trim();
-        const data = await signup(email, password);
+        const data = await userAPI.signup(email, password);
         if (data) {
             user.login(data);
             if (user.isAdmin) {
-                return navigate('/admin', { replace: true });
+                navigate('/admin', { replace: true });
             }
             if (user.isAuth && !user.isAdmin) {
-                return navigate('/user', { replace: true });
+                navigate('/user', { replace: true });
             }
         }
     };
@@ -42,11 +42,13 @@ const Signup = observer(() => {
                 <h3 className="m-auto">Регистрация</h3>
                 <Form className="d-flex flex-column" onSubmit={handleSubmit}>
                     <Form.Control
+                        type="email"
                         name="email"
                         className="mt-3"
                         placeholder="Введите ваш email..."
                     />
                     <Form.Control
+                        // type="password"
                         name="password"
                         className="mt-3"
                         placeholder="Введите ваш пароль..."

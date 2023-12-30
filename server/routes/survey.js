@@ -26,6 +26,18 @@ router.put(
     adminMiddleware,
     SurveyController.update
 );
+router.put(
+    '/move_up/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SurveyController.moveUp
+);
+router.put(
+    '/move_down/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SurveyController.moveDown
+);
 router.delete(
     '/delete/:id([0-9]+)',
     authMiddleware,

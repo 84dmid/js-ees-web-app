@@ -1,5 +1,45 @@
 import { guestInstance, authInstance } from './index.js';
 
+export const fetchCatalog = async ({
+    categoryIds,
+    subcategoryIds,
+    objectTypeIds,
+    surveyIds,
+    variantIds,
+}) => {
+    const params = {};
+    if (categoryIds) params.categoryFilter = categoryIds;
+    if (subcategoryIds) params.subcategoryFilter = subcategoryIds;
+    if (objectTypeIds) params.objectTypeFilter = objectTypeIds;
+    if (surveyIds) params.surveyFilter = surveyIds;
+    if (variantIds) params.variantFilter = variantIds;
+
+    const { data } = await guestInstance.get('category/content', {
+        params,
+    });
+    return data;
+};
+
+export const fetchFullCatalog = async ({
+    categoryIds,
+    subcategoryIds,
+    objectTypeIds,
+    surveyIds,
+    variantIds,
+}) => {
+    const params = {};
+    if (categoryIds) params.categoryFilter = categoryIds;
+    if (subcategoryIds) params.subcategoryFilter = subcategoryIds;
+    if (objectTypeIds) params.objectTypeFilter = objectTypeIds;
+    if (surveyIds) params.surveyFilter = surveyIds;
+    if (variantIds) params.variantFilter = variantIds;
+
+    const { data } = await authInstance.get('category/full_content', {
+        params,
+    });
+    return data;
+};
+
 export const createCategory = async (category) => {
     const { data } = await authInstance.post('category/create', category);
     return data;
@@ -7,6 +47,16 @@ export const createCategory = async (category) => {
 
 export const updateCategory = async (id, category) => {
     const { data } = await authInstance.put(`category/update/${id}`, category);
+    return data;
+};
+
+export const moveUpCategory = async (id) => {
+    const { data } = await authInstance.put(`category/move_up/${id}`);
+    return data;
+};
+
+export const moveDownCategory = async (id) => {
+    const { data } = await authInstance.put(`category/move_down/${id}`);
     return data;
 };
 
@@ -35,6 +85,18 @@ export const updateSubcategory = async (id, subcategory) => {
     return data;
 };
 
+export const moveUpSubcategory = async (id, categoryId) => {
+    const { data } = await authInstance.put(`subcategory/move_up/${id}`, { categoryId });
+    return data;
+};
+
+export const moveDownSubcategory = async (id, categoryId) => {
+    const { data } = await authInstance.put(`subcategory/move_down/${id}`, {
+        categoryId,
+    });
+    return data;
+};
+
 export const deleteSubcategory = async (id) => {
     const { data } = await authInstance.delete(`subcategory/delete/${id}`);
     return data;
@@ -57,6 +119,20 @@ export const createSurvey = async (survey) => {
 
 export const updateSurvey = async (id, survey) => {
     const { data } = await authInstance.put(`survey/update/${id}`, survey);
+    return data;
+};
+
+export const moveUpSurvey = async (id, subcategoryId) => {
+    const { data } = await authInstance.put(`survey/move_up/${id}`, {
+        subcategoryId,
+    });
+    return data;
+};
+
+export const moveDownSurvey = async (id, subcategoryId) => {
+    const { data } = await authInstance.put(`survey/move_down/${id}`, {
+        subcategoryId,
+    });
     return data;
 };
 
@@ -110,6 +186,22 @@ export const updateVariant = async (id, variant) => {
     return data;
 };
 
+export const moveUpVariant = async (id, surveyId, objectTypeId) => {
+    const { data } = await authInstance.put(`variant/move_up/${id}`, {
+        surveyId,
+        objectTypeId,
+    });
+    return data;
+};
+
+export const moveDownVariant = async (id, surveyId, objectTypeId) => {
+    const { data } = await authInstance.put(`variant/move_down/${id}`, {
+        surveyId,
+        objectTypeId,
+    });
+    return data;
+};
+
 export const deleteVariant = async (id) => {
     const { data } = await authInstance.delete(`variant/delete/${id}`);
     return data;
@@ -123,4 +215,47 @@ export const fetchVariant = async (id) => {
 export const fetchVariants = async () => {
     const { data } = await guestInstance.get(`variant/get_all`);
     return data;
+};
+
+export const fetchUnits = async () => {
+    const { data } = await authInstance.get('unit/get_all');
+    return data;
+};
+
+export const createVariantProperty = async (variantId, variantProp) => {
+    const { data } = await authInstance.post(
+        `variant/${variantId}/property/create`,
+        variantProp
+    );
+    return { data };
+};
+
+export const updateVariantProperty = async (id, variantId, variantProp) => {
+    const { data } = await authInstance.put(
+        `variant/${variantId}/property/update/${id}`,
+        variantProp
+    );
+    return { data };
+};
+
+export const moveDownVariantProperty = async (id, variantId) => {
+    const { data } = await authInstance.put(
+        `variant/${variantId}/property/move_down/${id}`
+    );
+    return { data };
+};
+
+export const moveUpVariantProperty = async (id, variantId) => {
+    const { data } = await authInstance.put(
+        `variant/${variantId}/property/move_up/${id}`
+    );
+    return { data };
+};
+
+export const deleteVariantProperty = async (id, variantId) => {
+    console.log(id, variantId);
+    const { data } = await authInstance.delete(
+        `variant/${variantId}/property/delete/${id}`
+    );
+    return { data };
 };

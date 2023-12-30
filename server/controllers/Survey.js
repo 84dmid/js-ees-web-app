@@ -26,15 +26,13 @@ class Survey {
 
     async create(req, res, next) {
         try {
-            const data = {
-                order: req.body.order,
-                name: req.body.name,
-                categoryId: req.body.categoryId,
-                subcategoryId: req.body.subcategoryId,
-            };
-            const survey = await SurveyModel.create(data);
+            if (!Object.keys(req.body).length) {
+                throw new Error('Нет данных для создания исследования');
+            }
+            const survey = await SurveyModel.create(req.body);
             res.json(survey);
         } catch (error) {
+            console.error(error);
             next(AppError.badRequest(error.message));
         }
     }
@@ -50,11 +48,36 @@ class Survey {
             }
             if (req.body.order) data.order = req.body.order;
             if (req.body.name) data.name = req.body.name;
-            if (req.body.categoryId) data.categoryId = req.body.categoryId;
             if (req.body.subcategoryId) data.subcategoryId = req.body.subcategoryId;
             const survey = await SurveyModel.update(req.params.id, data);
             res.json(survey);
         } catch (error) {
+            next(AppError.badRequest(error.message));
+        }
+    }
+
+    async moveUp(req, res, next) {
+        if (!req.params.id) {
+            throw new Error('Не указан id исследования');
+        }
+        try {
+            const survey = await SurveyModel.moveUp(req.params.id, req.body);
+            res.json(survey);
+        } catch (error) {
+            console.error(`Ошибка перемещения исследования вверх: ${error}`);
+            next(AppError.badRequest(error.message));
+        }
+    }
+
+    async moveDown(req, res, next) {
+        if (!req.params.id) {
+            throw new Error('Не указан id исследования');
+        }
+        try {
+            const survey = await SurveyModel.moveDown(req.params.id, req.body);
+            res.json(survey);
+        } catch (error) {
+            console.error(`Ошибка перемещения исследования вниз: ${error}`);
             next(AppError.badRequest(error.message));
         }
     }

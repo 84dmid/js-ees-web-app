@@ -1,13 +1,30 @@
 import React from 'react';
 
-const SubcategoryItem = ({ subcategory }) => {
+import SurveyItem from './SurveyItem.js';
+
+const SubcategoryItem = ({ name, surveys }) => {
+    const surveyList = surveys.map((survey) => {
+        return (
+            <SurveyItem
+                key={survey.id + 'survey'}
+                id={survey.id + 'survey'}
+                name={survey.name}
+                variants={survey.variants}
+            />
+        );
+    });
+
     return (
-        <tr>
-            <td className="bg-light"></td>
-            <td colSpan={6} className="bg-light">
-                <h5 className="text-muted">{subcategory.name}</h5>
-            </td>
-        </tr>
+        <>
+            <tr className="table-light">
+                <td></td>
+                <td colSpan={5}>
+                    {/* <div style={{ fontSize: '0.875em' }}>Подкатегория исследований</div> */}
+                    <h6>{name}</h6>
+                </td>
+            </tr>
+            {surveyList}
+        </>
     );
 };
 

@@ -9,8 +9,31 @@ const router = new express.Router();
 
 router.get('/get_all', SubcategoryController.getAll);
 router.get('/get_one/:id([0-9]+)', SubcategoryController.getOne);
+
 router.post('/create', authMiddleware, adminMiddleware, SubcategoryController.create);
-router.put('/update/:id([0-9]+)', authMiddleware, adminMiddleware, SubcategoryController.update);
-router.delete('/delete/:id([0-9]+)', authMiddleware, adminMiddleware, SubcategoryController.delete);
+router.put(
+    '/update/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SubcategoryController.update
+);
+router.put(
+    '/move_up/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SubcategoryController.moveUp
+);
+router.put(
+    '/move_down/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SubcategoryController.moveDown
+);
+router.delete(
+    '/delete/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    SubcategoryController.delete
+);
 
 export default router;

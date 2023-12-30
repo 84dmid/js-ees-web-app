@@ -31,12 +31,15 @@ const SurveyItem = ({ id, name, variants }) => {
 
     return (
         <>
-            <tr>
-                <td className="bg-light"></td>
-                <td colSpan={5} className="bg-light">
-                    <h6>{name}</h6>
+            <tr className="table-secondary">
+                <td className="text-center align-middle">
+                    <b></b>
+                </td>
+                <td colSpan={5} className="">
+                    <b>{name}</b>
                 </td>
             </tr>
+
             {variantsList}
         </>
     );

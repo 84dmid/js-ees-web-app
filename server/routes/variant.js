@@ -12,15 +12,66 @@ router.get('/get_all', VariantController.getAll);
 router.get('/get_one/:id([0-9]+)', VariantController.getOne);
 
 router.post('/create', authMiddleware, adminMiddleware, VariantController.create);
-router.put('/update/:id([0-9]+)', authMiddleware, adminMiddleware, VariantController.update);
-router.delete('/delete/:id([0-9]+)', authMiddleware, adminMiddleware, VariantController.delete);
+router.put(
+    '/update/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantController.update
+);
+router.put(
+    '/move_up/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantController.moveUp
+);
+router.put(
+    '/move_down/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantController.moveDown
+);
+router.delete(
+    '/delete/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantController.delete
+);
 
 router.get('/:variantId([0-9]+)/property/get_all', VariantPropController.getAll);
-router.get('/:variantId([0-9]+)/property/get_one/:id([0-9]+)', VariantPropController.getOne);
+router.get(
+    '/:variantId([0-9]+)/property/get_one/:id([0-9]+)',
+    VariantPropController.getOne
+);
 
-router.post('/:variantId([0-9]+)/property/create', authMiddleware, adminMiddleware, VariantPropController.create);
-router.put('/:variantId([0-9]+)/property/update/:id([0-9]+)', authMiddleware, adminMiddleware, VariantPropController.update);
-router.delete('/:variantId([0-9]+)/property/delete/:id([0-9]+)', authMiddleware, adminMiddleware, VariantPropController.delete);
-
+router.post(
+    '/:variantId([0-9]+)/property/create',
+    authMiddleware,
+    adminMiddleware,
+    VariantPropController.create
+);
+router.put(
+    '/:variantId([0-9]+)/property/update/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantPropController.update
+);
+router.put(
+    '/:variantId([0-9]+)/property/move_up/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantPropController.moveUp
+);
+router.put(
+    '/:variantId([0-9]+)/property/move_down/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantPropController.moveDown
+);
+router.delete(
+    '/:variantId([0-9]+)/property/delete/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    VariantPropController.delete
+);
 
 export default router;
