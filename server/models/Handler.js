@@ -2,7 +2,7 @@ import { Handler as HandlerMapping } from './mapping.js';
 
 class Handler {
     async getAll() {
-        const handlers = await HandlerMapping.findAll();
+        const handlers = await HandlerMapping.findAll({ order: ['id'] });
         return handlers;
     }
 
@@ -13,13 +13,13 @@ class Handler {
         }
         return handler;
     }
-    
+
     async create(data) {
-        const {name, description} = data;
-        const handler = await HandlerMapping.create({description, name});
+        const { name, description } = data;
+        const handler = await HandlerMapping.create({ name, description });
         return handler;
     }
-    
+
     async update(id, data) {
         const handler = await HandlerMapping.findByPk(id);
         if (!handler) {
@@ -34,7 +34,7 @@ class Handler {
         }
         return handler;
     }
-    
+
     async delete(id) {
         const handler = await HandlerMapping.findByPk(id);
         if (!handler) {

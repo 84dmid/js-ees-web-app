@@ -18,6 +18,7 @@ const SubcategoryItemEditor = ({
     order,
     setCatalogEditingToggle,
     categoryId,
+    filter,
 }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [subcategory, setSubcategory] = useState({ name });
@@ -33,6 +34,7 @@ const SubcategoryItemEditor = ({
                 order={survey.order}
                 setCatalogEditingToggle={setCatalogEditingToggle}
                 subcategoryId={id}
+                filter={filter}
             />
         );
     });
@@ -100,6 +102,7 @@ const SubcategoryItemEditor = ({
                 text={`Подтвердите удаление подкатегории: "${name}"`}
             />
             <tr className="table-light">
+                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -110,8 +113,7 @@ const SubcategoryItemEditor = ({
                         </Button>
                     </ButtonGroup>
                 </td>
-                <td className="align-middle">{order}</td>
-                <td colSpan={3} className="align-middle">
+                <td colSpan={4} className="align-middle">
                     {isEdit ? (
                         getForm('text', 'name', 'Подкатегория')
                     ) : (
@@ -123,12 +125,8 @@ const SubcategoryItemEditor = ({
                 </td>
                 <td className="align-middle text-end">
                     <ButtonGroup size="sm" className="w-100">
-                        <Button
-                            onClick={handleCreateClick}
-                            size="sm"
-                            variant="outline-primary text-start"
-                        >
-                            ➕↓
+                        <Button onClick={handleCreateClick} variant="outline-primary">
+                            ➕
                         </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
@@ -139,7 +137,7 @@ const SubcategoryItemEditor = ({
                     </ButtonGroup>
                 </td>
             </tr>
-            {surveyList}
+            {filter.isSurveysHidden || surveyList}
         </>
     );
 };

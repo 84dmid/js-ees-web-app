@@ -25,7 +25,6 @@ class User {
     }
 
     async signUp(req, res, next) {
-        console.log('test');
         try {
             const { email, password, role = 'USER' } = req.body;
             if (!email || !password) {

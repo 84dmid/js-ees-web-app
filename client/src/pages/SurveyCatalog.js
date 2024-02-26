@@ -4,15 +4,17 @@ import { observer } from 'mobx-react-lite';
 
 import FilterBar from '../components/FilterBar.js';
 import Catalog from '../components/Catalog.js';
+import VariantAutoCalculator from '../components/VariantAutoCalculator.js';
 
 const SurveyCatalog = observer(() => {
     return (
         <Container fluid>
             <Row className="mt-2">
-                <Col md={3} className="mb-3">
+                <Col lg={3} className="mb-3 bg-body-tertiary">
+                    <VariantAutoCalculator />
                     <FilterBar />
                 </Col>
-                <Col md={9} className="mb-3">
+                <Col lg={9} className="mb-3">
                     <Catalog />
                 </Col>
             </Row>

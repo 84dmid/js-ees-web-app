@@ -17,6 +17,19 @@ router.put(
     adminMiddleware,
     ObjectTypeController.update
 );
+
+router.put(
+    '/move_up/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    ObjectTypeController.moveUp
+);
+router.put(
+    '/move_down/:id([0-9]+)',
+    authMiddleware,
+    adminMiddleware,
+    ObjectTypeController.moveDown
+);
 router.delete(
     '/delete/:id([0-9]+)',
     authMiddleware,

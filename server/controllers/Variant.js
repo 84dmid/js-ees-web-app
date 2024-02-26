@@ -4,13 +4,22 @@ import AppError from '../errors/AppError.js';
 class Variant {
     async getAll(req, res, next) {
         try {
-            const {
-                categoryId = null,
-                subcategoryId = null,
-                surveyId = null,
-            } = req.params;
-            const options = { categoryId, subcategoryId, surveyId };
-            const variants = await VariantModel.getAll(options);
+            const variants = await VariantModel.getAll(req.query);
+            res.json(variants);
+        } catch (error) {
+            next(AppError.badRequest(error.message));
+        }
+    }
+
+    async getAllByIds(req, res, next) {
+        try {
+            const { variantIds } = req.query;
+            let variants;
+            if (variantIds?.length) {
+                variants = await VariantModel.getAll(req.query);
+            } else {
+                variants = [];
+            }
             res.json(variants);
         } catch (error) {
             next(AppError.badRequest(error.message));

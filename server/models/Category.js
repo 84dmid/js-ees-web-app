@@ -5,7 +5,9 @@ import { Subcategory as SubcategoryMapping } from './mapping.js';
 import { Survey as SurveyMapping } from './mapping.js';
 import { Variant as VariantMapping } from './mapping.js';
 import { ObjectType as ObjectTypeMapping } from './mapping.js';
-import { Unit as UnitMapping } from './mapping.js';
+import { Handler as HandlerMapping } from './mapping.js';
+import { SurveyScenarioVariant as SurveyScenarioVariantMapping } from './mapping.js';
+// import { Unit as UnitMapping } from './mapping.js';
 import sequelize from '../sequelize.js';
 
 class Category {
@@ -31,6 +33,7 @@ class Category {
                 '$subcategories.surveys.variants.objectType.id$': objectTypeFilter?.length
                     ? objectTypeFilter
                     : { [Op.not]: null },
+                '$subcategories.surveys.variants.is_production$': true,
             },
             order: [
                 'order',
@@ -53,7 +56,7 @@ class Category {
                                     as: 'variants',
                                     include: [
                                         { model: ObjectTypeMapping },
-                                        { model: UnitMapping },
+                                        { model: HandlerMapping },
                                     ],
                                 },
                             ],
@@ -112,8 +115,11 @@ class Category {
                                         id: variantFilter,
                                     }),
                                     include: [
-                                        { model: ObjectTypeMapping },
-                                        { model: UnitMapping },
+                                        { model: ObjectTypeMapping, as: 'objectType' },
+                                        {
+                                            model: SurveyScenarioVariantMapping,
+                                            as: 'surveyScenarioVariants',
+                                        },
                                     ],
                                 },
                             ],

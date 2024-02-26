@@ -1,24 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Container, Table, Button, ButtonGroup, Form, Row, Col } from 'react-bootstrap';
+import { Container, Button, ButtonGroup, Form, Row, Col } from 'react-bootstrap';
 
 import {
     fetchVariant,
     fetchObjectTypes,
-    fetchUnits,
     updateVariant,
-    createVariantProperty,
+    fetchHandlers,
+    fetchCategories,
+    fetchSubcategories,
+    fetchSurveys,
 } from '../http/catalogAPI.js';
 import { AppContext } from './AppContext.js';
-import VariantPropItemEditor from './VariantPropItemEditor.js';
-
-function formatNumberWithSpaces(number) {
-    return number.toLocaleString('ru-RU', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    });
-}
 
 const isValid = {
     objectTypeId(value) {
@@ -27,23 +21,29 @@ const isValid = {
     description(value) {
         return value.trim() !== '';
     },
+    unit(value) {
+        return value.trim() !== '';
+    },
+    price(value) {
+        return /^[0-9]+$/.test(value);
+    },
     normDoc(value) {
         return true;
     },
     justification(value) {
         return true;
     },
-    unitId(value) {
-        return /^[0-9]+$/.test(value);
+    properties(value) {
+        return true;
     },
-    price(value) {
-        return /^[0-9]+$/.test(value);
+    handlerId(value) {
+        return true;
     },
 };
 
 const defaultValid = {
     description: '',
-    unitId: '',
+    unit: '',
     objectTypeId: '',
     price: '',
 };
@@ -51,13 +51,49 @@ const defaultValid = {
 const VariantEditor = () => {
     const { isLoading } = useContext(AppContext);
     const { id } = useParams();
-    let [variant, setVariant] = useState({});
+    const [variant, setVariant] = useState({});
     const [objectTypes, setObjectTypes] = useState([]);
-    const [units, setUnits] = useState([]);
+    const [handlers, setHandlers] = useState([]);
+    const [positionsListForDynamicPriceCalc, setPositionsListForDynamicPriceCalc] =
+        useState(null);
     const [fetching, setFetching] = useState(true);
     const [isEdit, setIsEdit] = useState(false);
     const [valid, setValid] = useState(defaultValid);
-    const [variantEditingToggle, setVariantEditingToggle] = useState(false);
+
+    const getPositionsListByLevelName = async (levelName) => {
+        try {
+            let list = {
+                category: await fetchCategories(),
+                subcategory: await fetchSubcategories(),
+                survey: await fetchSurveys(),
+            };
+            return list[levelName].map((item) => {
+                return (
+                    <option key={item.id} value={item.id}>
+                        {item.name}
+                    </option>
+                );
+            });
+        } catch (error) {
+            console.error(`${levelName}(-s) fetching error: ${error}`);
+        }
+    };
+
+    useEffect(() => {
+        if (variant.dynamicPriceIdAndLevel) {
+            const levelName = variant.dynamicPriceIdAndLevel.split('.')[0];
+
+            getPositionsListByLevelName(levelName)
+                .then((data) => {
+                    setPositionsListForDynamicPriceCalc(data);
+                })
+                .catch((error) =>
+                    console.error(`${levelName}(-s) fetching error: ${error}`)
+                );
+        }
+    }, [variant.dynamicPriceIdAndLevel, isEdit]);
+
+    const tempVariant = useRef({});
 
     useEffect(() => {
         fetchVariant(id)
@@ -65,19 +101,25 @@ const VariantEditor = () => {
                 setVariant(data);
             })
             .finally(() => setFetching(false));
-        // eslint-disable-next-line
-    }, [isEdit, variantEditingToggle]);
 
-    useEffect(() => {
         fetchObjectTypes()
             .then((data) => setObjectTypes(data))
             .catch((error) => console.error(`ObjectTypes fetching error: ${error}`));
 
-        fetchUnits()
-            .then((data) => setUnits(data))
-            .catch((error) => console.error(`Units fetching error: ${error}`));
+        fetchHandlers()
+            .then((data) => setHandlers(data))
+            .catch((error) => console.error(`Handlers fetching error: ${error}`));
         // eslint-disable-next-line
-    }, []);
+    }, [isEdit]);
+
+    useEffect(() => {
+        isLoading.state = fetching;
+        // eslint-disable-next-line
+    }, [fetching]);
+
+    if (fetching) {
+        return null;
+    }
 
     const objectTypeList = objectTypes.map((item) => {
         return (
@@ -87,62 +129,69 @@ const VariantEditor = () => {
         );
     });
 
-    const unitList = units.map((item) => {
+    const handlersList = handlers.map((item) => {
         return (
             <option key={item.id} value={item.id}>
-                {item.name}
+                {item.name} - {item.description}
             </option>
         );
     });
 
-    useEffect(() => {
-        isLoading.state = fetching ? true : false;
-        // eslint-disable-next-line
-    }, [fetching]);
+    const handleChangeLevelNameForDynamicPriceCalc = (event) => {
+        if (event.target.id !== 'notSelected') {
+            setVariant((prevVariant) => ({
+                ...prevVariant,
+                dynamicPriceIdAndLevel: event.target.id + '.',
+            }));
+        } else {
+            setVariant((prevVariant) => ({
+                ...prevVariant,
+                dynamicPriceIdAndLevel: null,
+            }));
+            setPositionsListForDynamicPriceCalc('');
+        }
+    };
 
-    if (fetching) {
-        return null;
-    }
-
-    const variantProps = variant.variantProps.map((prop) => {
-        return (
-            <VariantPropItemEditor
-                key={prop.id}
-                prop={prop}
-                variantId={variant.id}
-                setVariantEditingToggle={setVariantEditingToggle}
-            />
-        );
-    });
-
-    const getVariantPriceByProps = variant.variantProps.reduce(
-        (sum, prop) => sum + prop.quantity * prop.price,
-        0
-    );
+    const handleChangeLevelIdForDynamicPriceCalc = (event) => {
+        if (variant.dynamicPriceIdAndLevel === null) return;
+        setVariant((prevVariant) => ({
+            ...prevVariant,
+            dynamicPriceIdAndLevel:
+                prevVariant.dynamicPriceIdAndLevel + event.target.value,
+        }));
+    };
 
     const handleFieldChange = (field, value) => {
         setVariant((prevVariant) => ({ ...prevVariant, [field]: value }));
         setValid((prevValid) => ({ ...prevValid, [field]: isValid[field](value) }));
     };
 
+    const handleFieldInput = (field, value) => {
+        tempVariant[field] = value;
+        setValid((prevValid) => ({ ...prevValid, [field]: isValid[field](value) }));
+    };
+
     const handleEditClick = () => {
-        setIsEdit((prev) => !prev);
         if (isEdit) {
             setValid(defaultValid);
         } else {
             setValid({
                 description: isValid.description(variant.description),
-                unitId: isValid.unitId(variant.unitId),
+                unit: isValid.unit(variant.unit),
                 objectTypeId: isValid.objectTypeId(variant.objectTypeId),
                 price: isValid.price(variant.price),
             });
         }
+        setFetching(true);
+        setIsEdit((prev) => !prev);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        Object.values(valid).every((value) => value);
-        updateVariant(variant.id, variant)
+        for (let value of Object.values(valid)) {
+            if (!value) return;
+        }
+        updateVariant(variant.id, { ...variant, ...tempVariant })
             .catch((error) => console.error(`Variant updating error: ${error}`))
             .finally(() => {
                 setValid(defaultValid);
@@ -150,20 +199,14 @@ const VariantEditor = () => {
             });
     };
 
-    const handleCreatePropClick = () => {
-        createVariantProperty(variant.id, { description: 'new survey' })
-            .then(() => setVariantEditingToggle((prevToggle) => !prevToggle))
-            .catch((error) => console.error(`Prop of variant creating error: ${error}`));
-    };
-
     return (
         <Container fluid>
             <Form>
                 <Row className="border-top border-bottom pb-2 mb-2">
-                    <Col sm={7}>
+                    <Col sm={9}>
                         <h3>{variant.survey.name}</h3>
                     </Col>
-                    <Col sm={5}>
+                    <Col sm={3}>
                         <div className="ms-auto pt-1">
                             {isEdit ? (
                                 <ButtonGroup className="w-100">
@@ -186,184 +229,224 @@ const VariantEditor = () => {
                                     variant="outline-primary"
                                     onClick={handleEditClick}
                                 >
-                                    ✏️ Редактировать вариант
+                                    ✏️ Редактировать
                                 </Button>
                             )}
                         </div>
                     </Col>
                 </Row>
 
-                <Form.Group as={Row} className="mb-2">
-                    <Form.Label htmlFor="price" column sm={5}>
-                        Цена единицы измерения
-                    </Form.Label>
-                    <Col sm={7}>
-                        <Form.Control
-                            disabled={!isEdit}
-                            id="price"
-                            type="number"
-                            onChange={(e) => handleFieldChange('price', e.target.value)}
-                            value={variant.price}
-                            isValid={valid.price === true}
-                            isInvalid={valid.price === false}
-                        />
-                    </Col>
+                <Form.Group className="mb-2">
+                    <Form.Label htmlFor="price">Цена единицы измерения</Form.Label>
+                    <Form.Control
+                        disabled={!isEdit}
+                        id="price"
+                        type="number"
+                        onChange={(e) => handleFieldChange('price', e.target.value)}
+                        value={variant.price}
+                        isValid={valid.price === true}
+                        isInvalid={valid.price === false}
+                    />
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-2">
-                    <Form.Label htmlFor="unitId" column sm={5}>
-                        Единица измерения
-                    </Form.Label>
-                    <Col sm={7}>
-                        <Form.Select
-                            disabled={!isEdit}
-                            id="unitId"
-                            onChange={(e) => handleFieldChange('unitId', e.target.value)}
-                            value={variant.unitId}
-                            isValid={valid.unitId === true}
-                            isInvalid={valid.unitId === false}
-                        >
-                            <option className="text-muted"></option>
-                            {unitList}
-                        </Form.Select>
-                    </Col>
+                <Form.Group className="mb-2">
+                    <Form.Label htmlFor="unit">Единица измерения</Form.Label>
+                    <Form.Control
+                        disabled={!isEdit}
+                        id="unit"
+                        type="text"
+                        onChange={(e) => handleFieldChange('unit', e.target.value)}
+                        value={variant.unit}
+                        isValid={valid.unit === true}
+                        isInvalid={valid.unit === false}
+                    />
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-2">
-                    <Form.Label htmlFor="objectTypeId" column sm={5}>
+                <Form.Group className="mb-2">
+                    <Form.Label htmlFor="objectTypeId">
                         Тип объекта строительства
                     </Form.Label>
-                    <Col sm={7}>
-                        <Form.Select
-                            disabled={!isEdit}
-                            id="objectTypeId"
-                            onChange={(e) =>
-                                handleFieldChange('objectTypeId', e.target.value)
-                            }
-                            value={variant.objectTypeId}
-                            isValid={valid.objectTypeId === true}
-                            isInvalid={valid.objectTypeId === false}
-                        >
-                            <option className="text-muted"></option>
-                            {objectTypeList}
-                        </Form.Select>
-                    </Col>
+                    <Form.Select
+                        disabled={!isEdit}
+                        id="objectTypeId"
+                        onChange={(e) =>
+                            handleFieldChange('objectTypeId', e.target.value)
+                        }
+                        value={variant.objectTypeId || ''}
+                        isValid={valid.objectTypeId === true}
+                        isInvalid={valid.objectTypeId === false}
+                    >
+                        <option className="text-muted"></option>
+                        {objectTypeList}
+                    </Form.Select>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-2">
-                    <Form.Label htmlFor="description" column sm={5}>
-                        Наименование варианта
+                <p className="mb-2 mt-3">Наименование варианта</p>
+                <div
+                    spellCheck={true}
+                    className={
+                        isEdit
+                            ? valid.description
+                                ? 'form-control is-valid'
+                                : 'form-control is-invalid'
+                            : 'form-control'
+                    }
+                    contentEditable={isEdit}
+                    suppressContentEditableWarning={true}
+                    disabled={isEdit}
+                    style={isEdit ? {} : { background: '#E9ECEF', minHeight: '2em' }}
+                    dangerouslySetInnerHTML={{
+                        __html: variant.description?.replace(/\n/g, '<br>'),
+                    }}
+                    onInput={(event) => {
+                        handleFieldInput('description', event.currentTarget.innerText);
+                    }}
+                />
+
+                <Form.Group className="mb-2 mt-3">
+                    <Form.Label htmlFor="handlerId">
+                        Функция авторасчёта количества единиц измерения
                     </Form.Label>
-                    <Col sm={7}>
-                        <Form.Control
-                            disabled={!isEdit}
-                            id="description"
-                            as="textarea"
-                            onChange={(e) =>
-                                handleFieldChange('description', e.target.value)
-                            }
-                            value={variant.description}
-                            isValid={valid.description === true}
-                            isInvalid={valid.description === false}
-                        />
-                    </Col>
+                    <Form.Select
+                        disabled={!isEdit}
+                        id="handlerId"
+                        onChange={(e) =>
+                            handleFieldChange('handlerId', e.target.value || null)
+                        }
+                        value={variant.handlerId || ''}
+                    >
+                        <option className="text-muted" value="">
+                            -
+                        </option>
+                        {handlersList}
+                    </Form.Select>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-2">
-                    <Form.Label htmlFor="normDoc" column sm={5}>
-                        Документ, обосновывающий включение исследования в состав изысканий
+                <Form.Group className="mb-2 mt-3">
+                    <Form.Label htmlFor="dataForDynamicPriceCalc">
+                        Данные для динамического определения цены единицы измерения
                     </Form.Label>
-                    <Col sm={7}>
-                        <Form.Control
+                    <Form.Group>
+                        <Form.Check
                             disabled={!isEdit}
-                            id="normDoc"
-                            as="textarea"
-                            onChange={(e) => handleFieldChange('normDoc', e.target.value)}
-                            value={variant.normDoc}
+                            inline
+                            label="Не выбрано"
+                            id="notSelected"
+                            name="levelName"
+                            type="checkbox"
+                            checked={variant.dynamicPriceIdAndLevel === null}
+                            onChange={handleChangeLevelNameForDynamicPriceCalc}
                         />
-                    </Col>
+                        <Form.Check
+                            disabled={!isEdit}
+                            inline
+                            label="Категория"
+                            id="category"
+                            name="levelName"
+                            type="checkbox"
+                            checked={
+                                variant.dynamicPriceIdAndLevel !== null &&
+                                variant.dynamicPriceIdAndLevel.split('.')[0] ===
+                                    'category'
+                            }
+                            onChange={handleChangeLevelNameForDynamicPriceCalc}
+                        />
+                        <Form.Check
+                            disabled={!isEdit}
+                            inline
+                            label="Субкатегория"
+                            id="subcategory"
+                            name="levelName"
+                            type="checkbox"
+                            checked={
+                                variant.dynamicPriceIdAndLevel !== null &&
+                                variant.dynamicPriceIdAndLevel.split('.')[0] ===
+                                    'subcategory'
+                            }
+                            onChange={handleChangeLevelNameForDynamicPriceCalc}
+                        />
+                        <Form.Check
+                            disabled={!isEdit}
+                            inline
+                            label="Исследование"
+                            id="survey"
+                            name="levelName"
+                            type="checkbox"
+                            checked={
+                                variant.dynamicPriceIdAndLevel !== null &&
+                                variant.dynamicPriceIdAndLevel.split('.')[0] === 'survey'
+                            }
+                            onChange={handleChangeLevelNameForDynamicPriceCalc}
+                        />
+                    </Form.Group>
+
+                    <Form.Select
+                        disabled={!isEdit}
+                        id="dataForDynamicPriceCalc"
+                        onChange={handleChangeLevelIdForDynamicPriceCalc}
+                        value={
+                            (variant.dynamicPriceIdAndLevel !== null &&
+                                variant.dynamicPriceIdAndLevel.split('.')[1]) ||
+                            ''
+                        }
+                    >
+                        <option className="text-muted" value="">
+                            -
+                        </option>
+                        {positionsListForDynamicPriceCalc}
+                    </Form.Select>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label htmlFor="justification" column sm={5}>
-                        Обоснование принятого объёма исследований
-                    </Form.Label>
-                    <Col sm={7}>
-                        <Form.Control
-                            disabled={!isEdit}
-                            id="justification"
-                            as="textarea"
-                            onChange={(e) =>
-                                handleFieldChange('justification', e.target.value)
-                            }
-                            value={variant.justification}
-                            rows="10"
-                        />
-                    </Col>
-                </Form.Group>
+                <p className="mb-2 mt-3">
+                    Документ, обосновывающий включение исследования в состав изысканий
+                </p>
+                <div
+                    spellCheck={true}
+                    className="form-control"
+                    contentEditable={isEdit}
+                    suppressContentEditableWarning={true}
+                    disabled={isEdit}
+                    style={isEdit ? {} : { background: '#E9ECEF', minHeight: '2em' }}
+                    dangerouslySetInnerHTML={{
+                        __html: variant.normDoc?.replace(/\n/g, '<br>'),
+                    }}
+                    onInput={(event) => {
+                        handleFieldInput('normDoc', event.currentTarget.innerText);
+                    }}
+                />
+
+                <p className="mb-2 mt-3">Обоснование принятого объёма исследований</p>
+                <div
+                    spellCheck={true}
+                    className="form-control"
+                    contentEditable={isEdit}
+                    suppressContentEditableWarning={true}
+                    disabled={isEdit}
+                    style={isEdit ? {} : { background: '#E9ECEF', minHeight: '2em' }}
+                    dangerouslySetInnerHTML={{
+                        __html: variant.justification?.replace(/\n/g, '<br>'),
+                    }}
+                    onInput={(event) => {
+                        handleFieldInput('justification', event.currentTarget.innerText);
+                    }}
+                />
+
+                <p className="mb-2 mt-3">Характеристики одой единицы измерения</p>
+                <div
+                    spellCheck={true}
+                    className="form-control"
+                    contentEditable={isEdit}
+                    suppressContentEditableWarning={true}
+                    disabled={isEdit}
+                    style={isEdit ? {} : { background: '#E9ECEF', minHeight: '2em' }}
+                    dangerouslySetInnerHTML={{
+                        __html: variant.properties?.replace(/\n/g, '<br>'),
+                    }}
+                    onInput={(event) => {
+                        handleFieldInput('properties', event.currentTarget.innerText);
+                    }}
+                />
             </Form>
-
-            <>
-                <h5 className="mt-4">
-                    Единица измерения ({variant.unit.name}) включает в себя следующие
-                    параметры:
-                </h5>
-                <Table bordered size="sm">
-                    <thead>
-                        <tr className="table-light">
-                            <th className="align-middle text-center"></th>
-                            <th className="align-middle text-center">
-                                Описание параметра
-                            </th>
-                            <th className="align-middle text-center">Ед. изм.</th>
-                            <th
-                                className="align-middle text-center"
-                                style={{ width: '6em' }}
-                            >
-                                Цена ед. изм.
-                            </th>
-                            <th className="align-middle text-center">Кол-во</th>
-                            <th
-                                className="align-middle text-center"
-                                style={{ width: '6em' }}
-                            >
-                                Цена
-                            </th>
-                            <th className="align-middle text-center">Опции</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colSpan={7} className="text-end">
-                                <Button
-                                    size="sm"
-                                    variant="outline-primary"
-                                    onClick={handleCreatePropClick}
-                                >
-                                    ➕↓ Добавить параметр
-                                </Button>
-                            </td>
-                        </tr>
-                        {!!variant.variantProps.length ? (
-                            <>
-                                {variantProps}
-
-                                <tr>
-                                    <th colSpan={5}>Стоимость единицы измерения</th>
-                                    <th className="text-center">
-                                        {formatNumberWithSpaces(getVariantPriceByProps)} ₽
-                                    </th>
-                                    <th className="text-center"></th>
-                                </tr>
-                            </>
-                        ) : (
-                            <tr>
-                                <td colSpan={7}>Параметры отсутствуют</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-            </>
         </Container>
     );
 };

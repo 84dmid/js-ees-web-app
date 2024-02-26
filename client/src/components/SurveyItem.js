@@ -19,22 +19,22 @@ const SurveyItem = ({ id, name, variants }) => {
         }
         variantsList.push(
             <VariantItem
+                handler={variant.handler?.name}
                 key={variant.id + 'variant'}
                 id={variant.id}
                 surveyId={id}
                 description={variant.description}
-                unit={variant.unit.name}
+                unit={variant.unit}
                 unitPrice={variant.price}
+                dynamicUnitPriceIdAndLevel={variant.dynamicPriceIdAndLevel}
             />
         );
     });
 
     return (
         <>
-            <tr className="table-secondary">
-                <td className="text-center align-middle">
-                    <b></b>
-                </td>
+            <tr>
+                <td></td>
                 <td colSpan={5} className="">
                     <b>{name}</b>
                 </td>

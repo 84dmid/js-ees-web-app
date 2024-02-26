@@ -15,10 +15,9 @@ const CategoryItem = ({ name, subcategories }) => {
 
     return (
         <>
-            <tr className="table-light">
+            <tr className="table-secondary">
                 <td></td>
                 <td colSpan={5}>
-                    {/* <div style={{ fontSize: '0.875em' }}>Категория исследований</div> */}
                     <h5>{name}</h5>
                 </td>
             </tr>

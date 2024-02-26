@@ -1,3 +1,4 @@
+import { toJS } from 'mobx';
 import { guestInstance } from './index.js';
 
 const basketAPI = {
@@ -6,12 +7,20 @@ const basketAPI = {
         return data;
     },
 
+    async updateParams(params) {
+        const { data } = await guestInstance.put('basket/project_params', params);
+        return data;
+    },
+
     async append(id, quantity) {
-        console.log(typeof id, typeof quantity);
         const { data } = await guestInstance.put(
             `basket/variant/${id}/append/${quantity}`
         );
+        return data;
+    },
 
+    async appendVariantsList(queryData) {
+        const { data } = await guestInstance.put('basket/append/variants', queryData);
         return data;
     },
 

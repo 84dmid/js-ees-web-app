@@ -1,5 +1,5 @@
 import sequelize from '../sequelize.js';
-import database, { STRING } from 'sequelize';
+import database, { STRING, TEXT } from 'sequelize';
 
 const { DataTypes } = database;
 
@@ -53,34 +53,27 @@ const ProjectSurveyProp = sequelize.define('projectSurveyProp', {
 const Variant = sequelize.define('variant', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     order: { type: DataTypes.INTEGER, allowNull: false },
-    description: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.TEXT, allowNull: false },
+    unit: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
-    normDoc: { type: DataTypes.STRING },
-    justification: { type: DataTypes.STRING },
-    isProduction: { type: DataTypes.BOOLEAN, defaultValue: false },
+    dynamicPriceIdAndLevel: { type: DataTypes.TEXT },
+    normDoc: { type: DataTypes.TEXT, defaultValue: '' },
+    justification: { type: DataTypes.TEXT, defaultValue: '' },
+    properties: { type: DataTypes.TEXT, defaultValue: '' },
+    isProduction: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
 
 const Basket = sequelize.define('basket', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    isObjectTypeLine: { type: DataTypes.BOOLEAN },
+    lendAreaInSqM: { type: DataTypes.INTEGER },
+    trackWidthInM: { type: DataTypes.INTEGER },
+    trackLengthInM: { type: DataTypes.INTEGER },
+    testingSitesNumberPerFiveHa: { type: DataTypes.INTEGER },
 });
 
 const BasketVariant = sequelize.define('basketVariant', {
-    quantity: { type: DataTypes.INTEGER, defaultValue: 1 },
-});
-
-// const NormDoc = sequelize.define('normDoc', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//     name: { type: DataTypes.STRING, allowNull: false },
-// });
-
-// const Justification = sequelize.define('justification', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//     text: { type: DataTypes.STRING, allowNull: false },
-// });
-
-const Unit = sequelize.define('unit', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false, unique: true },
+    quantity: { type: DataTypes.FLOAT, defaultValue: 1 },
 });
 
 const Category = sequelize.define('category', {
@@ -110,8 +103,8 @@ const ObjectType = sequelize.define('objectType', {
 
 const Handler = sequelize.define('handler', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false, unique: true },
-    description: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false },
+    description: { type: DataTypes.STRING, unique: true, allowNull: false },
 });
 
 const VariantProp = sequelize.define('variantProp', {
@@ -122,6 +115,17 @@ const VariantProp = sequelize.define('variantProp', {
     price: { type: DataTypes.INTEGER, defaultValue: 0 },
     quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
+
+const SurveyScenario = sequelize.define('surveyScenario', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    order: { type: DataTypes.INTEGER },
+    name: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.TEXT, defaultValue: '' },
+    isObjectTypeLine: { type: DataTypes.BOOLEAN },
+    isProduction: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+});
+
+const SurveyScenarioVariant = sequelize.define('surveyScenarioVariant', {});
 
 User.hasMany(Project, { onDelete: 'CASCADE' });
 Project.belongsTo(User);
@@ -141,22 +145,6 @@ BasketVariant.belongsTo(Variant);
 Basket.hasMany(BasketVariant);
 BasketVariant.belongsTo(Basket);
 
-// // many-to-many
-// Survey.belongsToMany(Basket, { through: BasketVariant, onDelete: 'CASCADE' });
-// Basket.belongsToMany(Survey, { through: BasketVariant, onDelete: 'CASCADE' });
-// // super many-to-many https://sequelize.org/master/manual/advanced-many-to-many.html
-// Survey.hasMany(BasketVariant);
-// BasketVariant.belongsTo(Survey);
-
-// NormDoc.hasMany(Variant, { onDelete: 'RESTRICT' });
-// Variant.belongsTo(NormDoc);
-
-// Justification.hasMany(Variant, { onDelete: 'RESTRICT' });
-// Variant.belongsTo(Justification);
-
-Unit.hasMany(Variant, { onDelete: 'RESTRICT' });
-Variant.belongsTo(Unit);
-
 Category.hasMany(Subcategory, { onDelete: 'RESTRICT' }); // 1
 Subcategory.belongsTo(Category);
 
@@ -175,6 +163,23 @@ Variant.belongsTo(Handler);
 Variant.hasMany(VariantProp, { onDelete: 'CASCADE' });
 VariantProp.belongsTo(Variant);
 
+// many-to-many
+Variant.belongsToMany(SurveyScenario, {
+    through: SurveyScenarioVariant,
+    onDelete: 'CASCADE',
+    // foreignKey: 'variantId'
+});
+SurveyScenario.belongsToMany(Variant, {
+    through: SurveyScenarioVariant,
+    onDelete: 'CASCADE',
+    // foreignKey: 'surveyScenarioId'
+});
+// super many-to-many https://sequelize.org/master/manual/advanced-many-to-many.html
+Variant.hasMany(SurveyScenarioVariant);
+SurveyScenarioVariant.belongsTo(Variant);
+SurveyScenario.hasMany(SurveyScenarioVariant);
+SurveyScenarioVariant.belongsTo(SurveyScenario);
+
 export {
     User,
     Project,
@@ -183,13 +188,12 @@ export {
     Variant,
     Basket,
     BasketVariant,
-    // NormDoc,
-    // Justification,
-    Unit,
     Category,
     Subcategory,
     Survey,
     ObjectType,
     Handler,
     VariantProp,
+    SurveyScenario,
+    SurveyScenarioVariant,
 };

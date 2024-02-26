@@ -1,5 +1,14 @@
 import React, { useContext } from 'react';
-import { Container, Navbar, Nav, Button, Spinner } from 'react-bootstrap';
+import {
+    Container,
+    Navbar,
+    Nav,
+    Button,
+    Spinner,
+    Row,
+    Col,
+    Stack,
+} from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
@@ -25,62 +34,83 @@ const NavBar = observer(() => {
     };
 
     return (
-        <Navbar bg="dark" variant="dark" className="mb-2">
+        <Navbar bg="dark" variant="dark" className="mb-2 d-flex flex-column flex-sm-row">
             <Container fluid>
-                <NavLink to="/" className="navbar-brand">
-                    Инженерно-экологические изыскания
-                    <div
-                        style={{
-                            width: '20px',
-                            marginLeft: '10px',
-                            display: 'inline-block',
-                        }}
-                    >
-                        <Spinner
-                            animation={isLoading.state ? 'grow' : false}
-                            variant="secondary"
-                            size="sm"
-                        />
-                    </div>
-                </NavLink>
-                <Nav className="ml-auto">
-                    <NavLink to="/" className="nav-link text-center">
-                        Каталог
-                    </NavLink>
-                    {/* <NavLink to="/research_processing" className="nav-link text-center">
-                        Обработка результатов исследований
-                    </NavLink> */}
-                    <NavLink to="/basket" className="nav-link text-center">
-                        Корзина{' '}
-                        {basket.count ? (
-                            <span style={{ fontSize: '0.8em', whiteSpace: 'nowrap' }}>
-                                <br /> {basket.count} /{' '}
-                                {formatNumberWithSpaces(basket.sum)} ₽
-                            </span>
-                        ) : (
-                            ''
-                        )}
-                    </NavLink>
-                    {user.isAuth && user.isAdmin && (
-                        <NavLink to="/admin" className="nav-link text-center">
-                            Панель управления
-                        </NavLink>
-                    )}
-                    {user.isAuth ? (
-                        <>
-                            <NavLink to="/user" className="nav-link text-center">
-                                Личный кабинет
-                            </NavLink>
-                        </>
-                    ) : (
-                        <>
-                            <NavLink to="/login" className="btn btn-primary">
-                                Войти
-                            </NavLink>
-                        </>
-                    )}
-                    {user.isAuth && <Button onClick={handleLogout}>Выйти</Button>}
-                </Nav>
+                <Stack>
+                    <Row>
+                        <Col lg={5}>
+                            <Navbar.Brand>
+                                <NavLink to="/" className="navbar-brand m-2 align-middle">
+                                    Инженерно-экологические изыскания
+                                </NavLink>
+                            </Navbar.Brand>
+                            <div
+                                style={{
+                                    width: '20px',
+                                    marginLeft: '10px',
+                                    display: 'inline-block',
+                                }}
+                            >
+                                <Spinner
+                                    animation={isLoading.state ? 'grow' : false}
+                                    variant="secondary"
+                                    size="sm"
+                                />
+                            </div>
+                        </Col>
+                        <Col>
+                            <Nav className="w-100 d-flex justify-content-between flex-column flex-sm-row">
+                                <NavLink to="/" className="nav-link">
+                                    Каталог
+                                </NavLink>
+
+                                <NavLink to="/basket" className="nav-link">
+                                    Корзина
+                                    {basket.count ? (
+                                        <span
+                                            style={{
+                                                fontSize: '0.8em',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            <br /> {basket.count} /{' '}
+                                            {formatNumberWithSpaces(basket.sum)} ₽
+                                        </span>
+                                    ) : (
+                                        ''
+                                    )}
+                                </NavLink>
+                                {user.isAuth && user.isAdmin && (
+                                    <NavLink to="/admin" className="nav-link">
+                                        Панель управления
+                                    </NavLink>
+                                )}
+                                {user.isAuth ? (
+                                    <>
+                                        <NavLink to="/user" className="nav-link">
+                                            Личный кабинет
+                                        </NavLink>
+                                    </>
+                                ) : (
+                                    <>
+                                        <NavLink
+                                            to="/login"
+                                            className="btn btn-primary mt-sm-0"
+                                        >
+                                            Войти
+                                        </NavLink>
+                                    </>
+                                )}
+
+                                {user.isAuth && (
+                                    <Button className="mt-sm-0" onClick={handleLogout}>
+                                        Выйти
+                                    </Button>
+                                )}
+                            </Nav>
+                        </Col>
+                    </Row>
+                </Stack>
             </Container>
         </Navbar>
     );

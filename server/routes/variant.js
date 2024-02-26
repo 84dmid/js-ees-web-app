@@ -9,6 +9,7 @@ import VariantPropController from '../controllers/VariantProp.js';
 const router = new express.Router();
 
 router.get('/get_all', VariantController.getAll);
+router.get('/get_all_by_ids', VariantController.getAllByIds);
 router.get('/get_one/:id([0-9]+)', VariantController.getOne);
 
 router.post('/create', authMiddleware, adminMiddleware, VariantController.create);

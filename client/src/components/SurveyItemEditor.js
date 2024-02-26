@@ -11,6 +11,7 @@ import {
     updateSurvey,
 } from '../http/catalogAPI.js';
 import CreatingVariantModalWindow from './CreatingVariantModalWindow.js';
+import { toJS } from 'mobx';
 
 const SurveyItemEditor = ({
     id,
@@ -19,6 +20,7 @@ const SurveyItemEditor = ({
     variants,
     setCatalogEditingToggle,
     subcategoryId,
+    filter,
 }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [survey, setSurvey] = useState({ name });
@@ -28,6 +30,7 @@ const SurveyItemEditor = ({
     const variantsList = [];
     let curObjectTypeId;
     variants.forEach((variant) => {
+        // console.log(toJS(variant));
         if (variant.objectType && curObjectTypeId !== variant.objectType.id) {
             curObjectTypeId = variant.objectType.id;
             variantsList.push(
@@ -45,11 +48,12 @@ const SurveyItemEditor = ({
                 id={variant.id}
                 surveyId={id}
                 description={variant.description}
-                unit={variant.unit?.name}
-                unitId={variant.unit?.id}
+                unit={variant.unit}
                 objectTypeId={variant.objectType.id}
                 unitPrice={variant.price}
                 order={variant.order}
+                isProduction={variant.isProduction}
+                scenarios={variant.surveyScenarioVariants}
                 setCatalogEditingToggle={setCatalogEditingToggle}
             />
         );
@@ -122,7 +126,8 @@ const SurveyItemEditor = ({
                 deleteFunction={deleteCallback}
                 text={`Подтвердите удаление вида исследований: "${name}"`}
             />
-            <tr className="table-secondary">
+            <tr>
+                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -133,8 +138,7 @@ const SurveyItemEditor = ({
                         </Button>
                     </ButtonGroup>
                 </td>
-                <td className="align-middle">{order}</td>
-                <td colSpan={3} className="align-middle">
+                <td colSpan={4} className="align-middle">
                     {isEdit ? (
                         getForm('text', 'name', 'Вид исследования')
                     ) : (
@@ -148,9 +152,9 @@ const SurveyItemEditor = ({
                         <Button
                             onClick={handleCreateClick}
                             size="sm"
-                            variant="outline-primary text-start"
+                            variant="outline-primary"
                         >
-                            ➕↓
+                            ➕
                         </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
@@ -161,7 +165,7 @@ const SurveyItemEditor = ({
                     </ButtonGroup>
                 </td>
             </tr>
-            {variantsList}
+            {filter.isVariantsHidden || variantsList}
         </>
     );
 };

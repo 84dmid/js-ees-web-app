@@ -9,8 +9,8 @@ const isValid = {
     description(value) {
         return value.trim() !== '';
     },
-    unitId(value) {
-        return /^[0-9]+$/.test(value);
+    unit(value) {
+        return value.trim() !== '';
     },
     price(value) {
         return /^[0-9]+$/.test(value);
@@ -26,7 +26,7 @@ const CreatingVariantModalWindow = ({
     setCatalogEditingToggle,
     editing,
     variantId,
-    unitId,
+    unit,
     objectTypeId,
     description,
     unitPrice,
@@ -34,24 +34,23 @@ const CreatingVariantModalWindow = ({
     const defaultValid = {
         objectTypeId: null,
         description: null,
-        unitId: null,
+        unit: null,
         price: null,
     };
     const defaultVariant = {
         objectTypeId: '',
         description: '',
-        unitId: '',
+        unit: '',
         price: '',
         surveyId,
     };
 
     const [objectTypes, setObjectTypes] = useState([]);
-    const [units, setUnits] = useState([]);
     const [variant, setVariant] = useState(
         editing
             ? {
                   description,
-                  unitId,
+                  unit,
                   objectTypeId,
                   price: unitPrice,
                   surveyId,
@@ -62,7 +61,7 @@ const CreatingVariantModalWindow = ({
         editing
             ? {
                   description: isValid.description(description),
-                  unitId: isValid.unitId(unitId),
+                  unit: isValid.unit(unit),
                   objectTypeId: isValid.objectTypeId(objectTypeId),
                   price: isValid.price(unitPrice),
               }
@@ -73,21 +72,9 @@ const CreatingVariantModalWindow = ({
         fetchObjectTypes()
             .then((data) => setObjectTypes(data))
             .catch((error) => console.error(`ObjectTypes fetching error: ${error}`));
-
-        fetchUnits()
-            .then((data) => setUnits(data))
-            .catch((error) => console.error(`Units fetching error: ${error}`));
     }, []);
 
     const objectTypeList = objectTypes.map((item) => {
-        return (
-            <option key={item.id} value={item.id}>
-                {item.name}
-            </option>
-        );
-    });
-
-    const unitList = units.map((item) => {
         return (
             <option key={item.id} value={item.id}>
                 {item.name}
@@ -109,7 +96,6 @@ const CreatingVariantModalWindow = ({
         if (editing) {
             updateVariant(variantId, variant)
                 .then(() => {
-                    console.log('test1');
                     setCatalogEditingToggle((prevToggle) => !prevToggle);
                     setShow(false);
                     setValid(defaultValid);
@@ -147,19 +133,6 @@ const CreatingVariantModalWindow = ({
             <Form noValidate onSubmit={handleSubmit}>
                 <Modal.Body>
                     <Form.Group className="mb-3">
-                        <Form.Label htmlFor="description">Описание варианта</Form.Label>
-                        <Form.Control
-                            id="description"
-                            as="textarea"
-                            onChange={(e) =>
-                                handleFieldChange('description', e.target.value)
-                            }
-                            value={variant.description}
-                            isValid={valid.description === true}
-                            isInvalid={valid.description === false}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
                         <Form.Label htmlFor="objectTypeId">
                             Тип объекта строительства
                         </Form.Label>
@@ -176,21 +149,35 @@ const CreatingVariantModalWindow = ({
                             {objectTypeList}
                         </Form.Select>
                     </Form.Group>
+
                     <Form.Group className="mb-3">
-                        <Form.Label htmlFor="unitId">Ед. изм.</Form.Label>
-                        <Form.Select
-                            id="unitId"
-                            onChange={(e) => handleFieldChange('unitId', e.target.value)}
-                            value={variant.unitId}
-                            isValid={valid.unitId === true}
-                            isInvalid={valid.unitId === false}
-                        >
-                            <option className="text-muted"></option>
-                            {unitList}
-                        </Form.Select>
+                        <Form.Label htmlFor="description">Описание варианта</Form.Label>
+                        <Form.Control
+                            id="description"
+                            as="textarea"
+                            onChange={(e) =>
+                                handleFieldChange('description', e.target.value)
+                            }
+                            value={variant.description}
+                            isValid={valid.description === true}
+                            isInvalid={valid.description === false}
+                        />
                     </Form.Group>
-                    <Form.Group>
-                        <Form.Label htmlFor="price">Цена ед. изм.</Form.Label>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="unit">Единица измерения</Form.Label>
+                        <Form.Control
+                            id="unit"
+                            type="text"
+                            onChange={(e) => handleFieldChange('unit', e.target.value)}
+                            value={variant.unit}
+                            isValid={valid.unit === true}
+                            isInvalid={valid.unit === false}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="price">Цена единицы измерения.</Form.Label>
                         <Form.Control
                             id="price"
                             type="number"

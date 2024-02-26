@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Form } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
 import DeletingModalWindow from './DeletingModalWindow';
@@ -28,6 +28,8 @@ const VariantItemEditor = ({
     objectTypeId,
     unitPrice,
     setCatalogEditingToggle,
+    isProduction,
+    scenarios,
 }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [showDeletingWindow, setShowDeletingWindow] = useState(false);
@@ -59,6 +61,16 @@ const VariantItemEditor = ({
             .catch((error) => console.error(`Variant moving down error: ${error}`));
     };
 
+    const handleCheck = (event) => {
+        updateVariant(id, { isProduction: event.target.checked })
+            .then(() => setCatalogEditingToggle((prevToggle) => !prevToggle))
+            .catch((error) =>
+                console.error(`Update variant isProduction error: ${error}`)
+            );
+    };
+
+    // console.log(scenarios);
+
     return (
         <>
             {isEdit && (
@@ -70,7 +82,7 @@ const VariantItemEditor = ({
                     setCatalogEditingToggle={setCatalogEditingToggle}
                     editing={true}
                     variantId={id}
-                    unitId={unitId}
+                    unit={unit}
                     objectTypeId={objectTypeId}
                     description={description}
                     unitPrice={unitPrice}
@@ -86,6 +98,13 @@ const VariantItemEditor = ({
             )}
             <tr key={id}>
                 <td className="align-middle">
+                    <Form.Check
+                        id={id + 'check'}
+                        onChange={handleCheck}
+                        checked={isProduction}
+                    />
+                </td>
+                <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
                             ↓
@@ -95,9 +114,15 @@ const VariantItemEditor = ({
                         </Button>
                     </ButtonGroup>
                 </td>
-                <td className="align-middle">{order}</td>
 
                 <td className="align-middle">{description}</td>
+                <td className="align-middle text-center">
+                    <Form.Check
+                        id={id + 'checkScenario'}
+                        // onChange={handleCheck}
+                        // checked={isProduction}
+                    />
+                </td>
 
                 <td className="text-center align-middle">{unit}</td>
                 <td className="text-end align-middle">
@@ -109,7 +134,7 @@ const VariantItemEditor = ({
                             to={`/admin/edit/catalog/variant/${id}`}
                             className="btn btn-outline-primary"
                         >
-                            {'> >'}
+                            {'>>'}
                         </NavLink>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}

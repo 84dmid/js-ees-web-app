@@ -12,6 +12,9 @@ import Variant from '../pages/Variant.js';
 import CatalogEditor from './CatalogEditor.js';
 import Statistics from './Statistics.js';
 import VariantEditor from './VariantEditor.js';
+import ObjectTypesEditor from './ObjectTypesEditor.js';
+import HandlersEditor from './HandlersEditor.js';
+import SurveyScenariosEditor from './SurveyScenariosEditor.js';
 
 const AppRouter = () => {
     const { user } = useContext(AppContext);
@@ -31,7 +34,7 @@ const AppRouter = () => {
             {user.isAdmin && (
                 <>
                     <Route path="/admin" element={<Admin />}>
-                        <Route path="statistics" element={<Statistics />} />
+                        <Route index element={<CatalogEditor />} />
                         <Route path="edit/">
                             <Route path="catalog" element={<CatalogEditor />} />
                             <Route
@@ -39,6 +42,13 @@ const AppRouter = () => {
                                 element={<VariantEditor />}
                             />
                         </Route>
+                        <Route path="edit/objectTypes" element={<ObjectTypesEditor />} />
+                        <Route path="edit/handlers" element={<HandlersEditor />} />
+                        <Route
+                            path="edit/surveyScenarios"
+                            element={<SurveyScenariosEditor />}
+                        />
+                        <Route path="statistics" element={<Statistics />} />
                     </Route>
                 </>
             )}

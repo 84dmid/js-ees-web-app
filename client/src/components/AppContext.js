@@ -2,7 +2,7 @@ import React, { createContext } from 'react';
 import UserStore from '../store/UserStore.js';
 import CatalogStore from '../store/CatalogStore.js';
 import IsLoadingStore from '../store/IsLoadingStore.js';
-import BasketStore from '../store/BascetStore.js';
+import BasketStore from '../store/BasketStore.js';
 
 const context = {
     user: new UserStore(),

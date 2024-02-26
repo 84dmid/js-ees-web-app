@@ -15,7 +15,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "name": "areaMED",
+    "id": "a",
     "description": "авторасчёт количества точек замеров МЭД-гамма излучения на участке"
 }
 
@@ -26,7 +26,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 Content-type: application/json; charset=utf-8
 
 {
-    "name": "chemicalGround",
     "description": "авторасчёт количества точек отбора проб грунта на хим загрязнешние"
 }
 

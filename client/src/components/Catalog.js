@@ -62,10 +62,10 @@ const Catalog = observer(() => {
                     </th>
                     <th className="align-middle text-center"></th>
                     <th className="align-middle text-center">Ед. изм.</th>
-                    {/* <th className="align-middle text-center">
-                        Цена ед. изм.
-                    </th> */}
-                    <th className="align-middle text-center" style={{ width: '5em' }}>
+                    <th
+                        className="align-middle text-center"
+                        style={{ width: '6em', whiteSpace: 'nowrap' }}
+                    >
                         Количество
                     </th>
                     <th className="align-middle text-center" style={{ width: '7em' }}>

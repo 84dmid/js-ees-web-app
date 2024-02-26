@@ -4,8 +4,7 @@ import AppError from '../errors/AppError.js';
 class Survey {
     async getAll(req, res, next) {
         try {
-            const { categoryId = null, subcategoryId = null } = req.params;
-            const surveys = await SurveyModel.getAll({ categoryId, subcategoryId });
+            const surveys = await SurveyModel.getAll();
             res.json(surveys);
         } catch (error) {
             next(AppError.badRequest(error.message));

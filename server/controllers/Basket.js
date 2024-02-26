@@ -8,11 +8,7 @@ class Basket {
     async getOne(req, res, next) {
         try {
             let basket;
-            if (req.signedCookies.basketId) {
-                basket = await BasketModel.getOne(parseInt(req.signedCookies.basketId));
-            } else {
-                basket = await BasketModel.create();
-            }
+            basket = await BasketModel.getOne(parseInt(req.signedCookies.basketId));
             res.cookie('basketId', basket.id, { maxAge, signed });
             res.json(basket);
         } catch (error) {
@@ -20,15 +16,33 @@ class Basket {
         }
     }
 
+    async updateProjectParams(req, res, next) {
+        try {
+            let basketId;
+            if (req.signedCookies.basketId) {
+                basketId = parseInt(req.signedCookies.basketId);
+            }
+            const projectParams = req.body;
+            const basket = await BasketModel.updateProjectParams(basketId, projectParams);
+            res.cookie('basketId', basket.id, { maxAge, signed });
+            res.json(basket);
+        } catch (error) {
+            next(
+                AppError.badRequest(
+                    `Ошибка при обновлении параметров проекта в корзине: ${error.message}`
+                )
+            );
+        }
+    }
+
     async append(req, res, next) {
-        console.log('test``````````````````````````````````````');
         try {
             let basketId;
             if (req.signedCookies.basketId) {
                 basketId = parseInt(req.signedCookies.basketId);
             }
             const { variantId, quantity } = req.params;
-            if (!parseInt(quantity)) {
+            if (parseFloat(quantity) <= 0) {
                 throw new Error('Не указан объём исследований');
             }
             const basket = await BasketModel.append(basketId, variantId, quantity);
@@ -43,6 +57,25 @@ class Basket {
         }
     }
 
+    async appendVariantsList(req, res, next) {
+        try {
+            let basketId;
+            if (req.signedCookies.basketId) {
+                basketId = parseInt(req.signedCookies.basketId);
+            }
+            const data = req.body;
+            const basket = await BasketModel.appendVariantsList(basketId, data);
+            res.cookie('basketId', basket.id, { maxAge, signed });
+            res.json(basket);
+        } catch (error) {
+            next(
+                AppError.badRequest(
+                    `Ошибка при добавлении списка вариантов в корзину: ${error.message}`
+                )
+            );
+        }
+    }
+
     async update(req, res, next) {
         try {
             let basketId;
@@ -51,7 +84,7 @@ class Basket {
             }
             const { variantId, quantity } = req.params;
 
-            if (+quantity <= 0) {
+            if (parseFloat(quantity) <= 0) {
                 throw new Error('Не указан объём исследований');
             }
             const basket = await BasketModel.update(basketId, variantId, quantity);

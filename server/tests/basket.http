@@ -1,13 +1,44 @@
 ### Получить корзину
 GET /api/basket/get_one HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
+Cookie: basketId=s%3A66.D%2FroMsNe6oWEHGwMFcCJKaOr9LHt3L4sfvihj3AMwfI
+
+### Изменить параметры проекта в корзине
+PUT /api/basket/project_params HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A52.BOzuOp0cPr1k1hXnxjcPEY5WWj3EIKG0VZt3dAgbu6M
+Content-type: application/json; charset=utf-8
+
+{
+  "isObjectTypeLine": null,
+  "lendAreaInSqM": null,
+  "trackWidthInM": null,
+  "trackLengthInM": null,
+  "testingSitesNumberPerFiveHa": null
+}
 
 ### Добавить в корзину
 PUT /api/basket/variant/7/append/3 HTTP/1.1
 Host: localhost:7000
 Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
 
+### Очистить корзину, добаить несколько варинатов за один раз и обновить параметры
+PUT /api/basket/append/variants HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
+Content-type: application/json; charset=utf-8
+
+{
+  "isObjectTypeLine": false,
+  "lendAreaInSqM": 10000,
+  "trackWidthInM": null,
+  "trackLengthInM": null,
+  "testingSitesNumberPerFiveHa": 2,
+  "variants": [
+    {"id": 1, "quantity": 5},
+    {"id": 2, "quantity": 3}
+  ]
+}
 
 ### Обновить вариант в корзине (количество)
 PUT /api/basket/variant/7/update/7 HTTP/1.1
@@ -22,7 +53,7 @@ Cookie: basketId=s%3A4.FRzJuebhWhb9dud6Kazp%2FpP0hpIQauHs3XW7Z5M5wQ0
 ### Очистить корзину
 PUT /api/basket/clear HTTP/1.1
 Host: localhost:7000
-Cookie: basketId=s%3A150.zgdUzUST0kufsYRFJPKncLbelo7RdRhtaBMjruudeh4
+Cookie: basketId=s%3A56.jKpw3%2B4hziwLjGz9zvDKpO%2FlWjZ%2BLhdfVkGfzyCKmTg
 
 ### Удалить корзину
 DELETE /api/basket/delete/ HTTP/1.1

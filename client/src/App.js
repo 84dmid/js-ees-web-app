@@ -21,9 +21,13 @@ const App = observer(() => {
                     if (userData) {
                         user.login(userData);
                     }
-                    if (basketData.basketVariants) {
-                        basket.variants = basketData.basketVariants;
-                    }
+                    basket.isObjectTypeLine = basketData.isObjectTypeLine;
+                    basket.lendAreaInSqM = basketData.lendAreaInSqM;
+                    basket.trackWidthInM = basketData.trackWidthInM;
+                    basket.trackLengthInM = basketData.trackLengthInM;
+                    basket.testingSitesNumberPerFiveHa =
+                        basketData.testingSitesNumberPerFiveHa;
+                    basket.variants = basketData.basketVariants;
                 })
             )
             .catch((error) =>
@@ -36,7 +40,7 @@ const App = observer(() => {
     }, []);
 
     useEffect(() => {
-        isLoading.state = fetching ? true : false;
+        isLoading.state = fetching;
         // eslint-disable-next-line
     }, [fetching]);
 

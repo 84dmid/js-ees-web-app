@@ -1,66 +1,76 @@
 import React, { useState } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import {
+    Container,
+    Navbar,
+    Nav,
+    Button,
+    Spinner,
+    Row,
+    Col,
+    Stack,
+} from 'react-bootstrap';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const User = () => {
-    const [data, setData] = useState({ id: 1, name: 'John', age: 25 });
-
-    const [isEdit, setIsEdit] = useState(false);
-
-    const handleEdit = (id) => {
-        setIsEdit((prevState) => (prevState ? false : true));
-    };
-
-    const handleSave = (id) => {
-        setData((prevData) => {
-            return { ...prevData, name: user.name };
-        });
-        setIsEdit(!isEdit);
-    };
-
-    const user = { name: data.name };
-
-    console.log(data.name);
-
     return (
-        <>
-            <div>User</div>
-            <Table striped bordered hover responsive>
-                <tbody>
-                    <tr key={data.id}>
-                        <td>{data.id}</td>
-                        <td
-                            className={!isEdit ? '' : 'table-primary'}
-                            // className="form-control"
-                            contentEditable={isEdit}
-                            onInput={(e) => (user.name = e.currentTarget.innerText)}
-                            suppressContentEditableWarning={true}
-                        >
-                            {isEdit ? user.name : data.name}
-                        </td>
-                        <td>
-                            {isEdit ? (
-                                <>
-                                    <Button
-                                        onClick={() => {
-                                            console.log(user.name);
-                                            handleSave(data.id);
-                                        }}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button onClick={() => handleEdit(data.id)}>
-                                        Exit
-                                    </Button>
-                                </>
-                            ) : (
-                                <Button onClick={() => handleEdit(data.id)}>Edit</Button>
-                            )}
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
-        </>
+        <Navbar bg="dark" variant="dark" className="mb-2 d-flex flex-column flex-sm-row">
+            <Container fluid>
+                <Stack>
+                    <Row>
+                        <Col lg={5}>
+                            <Navbar.Brand>
+                                <NavLink to="/" className="navbar-brand m-2 align-middle">
+                                    Инженерно-экологические изыскания
+                                </NavLink>
+                            </Navbar.Brand>
+                        </Col>
+                        <Col>
+                            <Nav className="w-100 d-flex justify-content-between flex-column flex-sm-row">
+                                <NavLink to="/" className="nav-link">
+                                    Каталог
+                                </NavLink>
+                                <NavLink to="/basket" className="nav-link">
+                                    Корзина
+                                </NavLink>
+                                <NavLink to="/admin" className="nav-link">
+                                    Панель управления
+                                </NavLink>
+                                <NavLink to="/user" className="nav-link">
+                                    Личный кабинет
+                                </NavLink>
+                                <Button className="mt-sm-0">Выйти</Button>
+                            </Nav>
+                        </Col>
+                    </Row>
+                </Stack>
+            </Container>
+        </Navbar>
     );
 };
 
 export default User;
+
+// return (
+//     <Navbar bg="dark" variant="dark" className="mb-2 d-flex flex-column flex-md-row">
+//         <div className="d-flex">
+//             <NavLink to="/" className="navbar-brand m-2">
+//                 Инженерно-экологические изыскания
+//             </NavLink>
+//         </div>
+//         <Nav className="w-100 d-flex flex-column flex-md-row">
+//             <NavLink to="/" className="nav-link">
+//                 Каталог
+//             </NavLink>
+//             <NavLink to="/basket" className="nav-link">
+//                 Корзина
+//             </NavLink>
+//             <NavLink to="/admin" className="nav-link">
+//                 Панель управления
+//             </NavLink>
+//             <NavLink to="/user" className="nav-link">
+//                 Личный кабинет
+//             </NavLink>
+//         </Nav>
+//         <Button className="mt-md-0 mt-2">Выйти</Button>
+//     </Navbar>
+// );

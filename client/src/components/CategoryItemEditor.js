@@ -17,6 +17,7 @@ const CategoryItemEditor = ({
     name,
     subcategories,
     setCatalogEditingToggle,
+    filter,
 }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [category, setCategory] = useState({ name });
@@ -32,6 +33,7 @@ const CategoryItemEditor = ({
                 order={subcategory.order}
                 setCatalogEditingToggle={setCatalogEditingToggle}
                 categoryId={id}
+                filter={filter}
             />
         );
     });
@@ -98,7 +100,8 @@ const CategoryItemEditor = ({
                 deleteFunction={deleteCategoryCallback}
                 text={`Подтвердите удаление категории: "${name}"`}
             />
-            <tr className="table-light">
+            <tr className="table-secondary">
+                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -109,8 +112,7 @@ const CategoryItemEditor = ({
                         </Button>
                     </ButtonGroup>
                 </td>
-                <td className="align-middle">{order}</td>
-                <td colSpan={3} className="align-middle">
+                <td colSpan={4} className="align-middle">
                     {isEdit ? (
                         getForm('text', 'name', 'Категория')
                     ) : (
@@ -125,9 +127,9 @@ const CategoryItemEditor = ({
                         <Button
                             onClick={handleCreateClick}
                             size="sm"
-                            variant="outline-primary text-start"
+                            variant="outline-primary"
                         >
-                            ➕↓
+                            ➕
                         </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
@@ -138,7 +140,7 @@ const CategoryItemEditor = ({
                     </ButtonGroup>
                 </td>
             </tr>
-            {subcategoryList}
+            {filter.isSubcategoriesHidden || subcategoryList}
         </>
     );
 };

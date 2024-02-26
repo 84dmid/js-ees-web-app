@@ -10,9 +10,10 @@ import project from './project.js';
 // import projectSurvey from './projectSurvey.js'; // на будущее
 import subcategory from './subcategory.js';
 import survey from './survey.js';
-import unit from './unit.js';
+// import unit from './unit.js';
 import user from './user.js';
 import variant from './variant.js';
+import surveyScenario from './surveyScenario.js';
 
 const router = new express.Router();
 
@@ -26,8 +27,9 @@ router.use('/project', project);
 // router.use('/project_survey', projectSurvey); // на будущее
 router.use('/subcategory', subcategory);
 router.use('/survey', survey);
-router.use('/unit', unit);
+// router.use('/unit', unit);
 router.use('/user', user);
 router.use('/variant', variant);
+router.use('/survey_scenario', surveyScenario);
 
 export default router;

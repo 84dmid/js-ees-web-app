@@ -37,6 +37,8 @@ export const fetchFullCatalog = async ({
     const { data } = await authInstance.get('category/full_content', {
         params,
     });
+
+    console.log(data);
     return data;
 };
 
@@ -161,6 +163,16 @@ export const updateObjectType = async (id, objectType) => {
     return data;
 };
 
+export const moveUpObjectType = async (id) => {
+    const { data } = await authInstance.put(`object_type/move_up/${id}`);
+    return data;
+};
+
+export const moveDownObjectType = async (id) => {
+    const { data } = await authInstance.put(`object_type/move_down/${id}`);
+    return data;
+};
+
 export const deleteObjectType = async (id) => {
     const { data } = await authInstance.delete(`object_type/delete/${id}`);
     return data;
@@ -217,45 +229,72 @@ export const fetchVariants = async () => {
     return data;
 };
 
+export const fetchVariantsByIds = async (variantIds) => {
+    const params = {};
+    if (variantIds) params.variantIds = variantIds;
+    const { data } = await guestInstance.get(`variant/get_all_by_ids`, { params });
+    return data;
+};
+
 export const fetchUnits = async () => {
     const { data } = await authInstance.get('unit/get_all');
     return data;
 };
 
-export const createVariantProperty = async (variantId, variantProp) => {
-    const { data } = await authInstance.post(
-        `variant/${variantId}/property/create`,
-        variantProp
-    );
-    return { data };
+export const createHandler = async (handler) => {
+    const { data } = await authInstance.post('handler/create', handler);
+    return data;
 };
 
-export const updateVariantProperty = async (id, variantId, variantProp) => {
-    const { data } = await authInstance.put(
-        `variant/${variantId}/property/update/${id}`,
-        variantProp
-    );
-    return { data };
+export const updateHandler = async (id, handler) => {
+    const { data } = await authInstance.put(`handler/update/${id}`, handler);
+    return data;
 };
 
-export const moveDownVariantProperty = async (id, variantId) => {
-    const { data } = await authInstance.put(
-        `variant/${variantId}/property/move_down/${id}`
-    );
-    return { data };
+export const deleteHandler = async (id) => {
+    const { data } = await authInstance.delete(`handler/delete/${id}`);
+    return data;
 };
 
-export const moveUpVariantProperty = async (id, variantId) => {
-    const { data } = await authInstance.put(
-        `variant/${variantId}/property/move_up/${id}`
-    );
-    return { data };
+export const fetchHandlers = async () => {
+    const { data } = await authInstance.get('handler/get_all');
+    return data;
 };
 
-export const deleteVariantProperty = async (id, variantId) => {
-    console.log(id, variantId);
-    const { data } = await authInstance.delete(
-        `variant/${variantId}/property/delete/${id}`
-    );
-    return { data };
-};
+// export const createVariantProperty = async (variantId, variantProp) => {
+//     const { data } = await authInstance.post(
+//         `variant/${variantId}/property/create`,
+//         variantProp
+//     );
+//     return { data };
+// };
+
+// export const updateVariantProperty = async (id, variantId, variantProp) => {
+//     const { data } = await authInstance.put(
+//         `variant/${variantId}/property/update/${id}`,
+//         variantProp
+//     );
+//     return { data };
+// };
+
+// export const moveDownVariantProperty = async (id, variantId) => {
+//     const { data } = await authInstance.put(
+//         `variant/${variantId}/property/move_down/${id}`
+//     );
+//     return { data };
+// };
+
+// export const moveUpVariantProperty = async (id, variantId) => {
+//     const { data } = await authInstance.put(
+//         `variant/${variantId}/property/move_up/${id}`
+//     );
+//     return { data };
+// };
+
+// export const deleteVariantProperty = async (id, variantId) => {
+//     console.log(id, variantId);
+//     const { data } = await authInstance.delete(
+//         `variant/${variantId}/property/delete/${id}`
+//     );
+//     return { data };
+// };

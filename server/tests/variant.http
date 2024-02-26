@@ -3,6 +3,11 @@ GET /api/variant/get_all HTTP/1.1
 Host: localhost:7000
 Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
 
+### Получить все варианты исследований
+GET /api/variant/get_all_by_ids HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhb...XVCJ9.eyJpZ...2NDR9.eDlzf...87TTA
+
 ### Получить один вариант исследований
 GET /api/variant/get_one/1 HTTP/1.1
 Host: localhost:7000

@@ -9,10 +9,10 @@ const Admin = () => {
         <Container fluid>
             {/* <h3>Панель управления</h3> */}
             <Row className="mt-3 mb-3">
-                <Col md={3}>
+                <Col lg={3}>
                     <AdminNavBar />
                 </Col>
-                <Col md={9}>
+                <Col lg={9}>
                     <Outlet />
                 </Col>
             </Row>

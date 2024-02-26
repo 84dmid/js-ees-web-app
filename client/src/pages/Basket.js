@@ -10,7 +10,17 @@ const Basket = observer(() => {
     const { basket } = useContext(AppContext);
 
     const clearBasket = () => {
-        basketAPI.clear().then((data) => (basket.variants = data.basketVariants));
+        basketAPI
+            .clear()
+            .catch((error) => console.error(`Clearing basket error: ${error}`))
+            .then((data) => {
+                basket.isObjectTypeLine = data.isObjectTypeLine;
+                basket.lendAreaInSqM = data.lendAreaInSqM;
+                basket.trackWidthInM = data.trackWidthInM;
+                basket.trackLengthInM = data.trackLengthInM;
+                basket.testingSitesNumberPerFiveHa = data.testingSitesNumberPerFiveHa;
+                basket.variants = data.basketVariants;
+            });
     };
 
     if (!basket.variants.length) {
