@@ -60,12 +60,12 @@ const NavBar = observer(() => {
                         </Col>
                         <Col>
                             <Nav className="w-100 d-flex justify-content-between flex-column flex-sm-row">
-                                <NavLink to="/" className="nav-link">
-                                    Каталог
+                                <NavLink to="/survey_designer" className="nav-link">
+                                    Конструктор изысканий
                                 </NavLink>
 
                                 <NavLink to="/basket" className="nav-link">
-                                    Корзина
+                                    {/* Корзина
                                     {basket.count ? (
                                         <span
                                             style={{
@@ -73,11 +73,29 @@ const NavBar = observer(() => {
                                                 whiteSpace: 'nowrap',
                                             }}
                                         >
-                                            <br /> {basket.count} /{' '}
-                                            {formatNumberWithSpaces(basket.sum)} ₽
+                                            {' '}
+                                            / {formatNumberWithSpaces(basket.sum)} ₽
                                         </span>
                                     ) : (
                                         ''
+                                    )} */}
+                                    {basket.count ? (
+                                        <span
+                                            style={{
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            Проект изысканий{' '}
+                                            <span
+                                                style={{
+                                                    fontSize: '0.85em',
+                                                }}
+                                            >
+                                                {formatNumberWithSpaces(basket.sum)} ₽
+                                            </span>
+                                        </span>
+                                    ) : (
+                                        <>🛒 Корзина</>
                                     )}
                                 </NavLink>
                                 {user.isAuth && user.isAdmin && (

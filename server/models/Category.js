@@ -4,20 +4,28 @@ import { Category as CategoryMapping } from './mapping.js';
 import { Subcategory as SubcategoryMapping } from './mapping.js';
 import { Survey as SurveyMapping } from './mapping.js';
 import { Variant as VariantMapping } from './mapping.js';
-import { ObjectType as ObjectTypeMapping } from './mapping.js';
-import { Handler as HandlerMapping } from './mapping.js';
-import { SurveyScenarioVariant as SurveyScenarioVariantMapping } from './mapping.js';
-// import { Unit as UnitMapping } from './mapping.js';
+import { ScenarioVariant as ScenarioVariantMapping } from './mapping.js';
 import sequelize from '../sequelize.js';
 
 class Category {
     async getContent({
         categoryFilter,
         subcategoryFilter,
-        objectTypeFilter,
         surveyFilter,
         variantFilter,
+        isObjectTypeLine,
     }) {
+        if (isObjectTypeLine === null || isObjectTypeLine === undefined) {
+            isObjectTypeLine = null;
+        } else if (isObjectTypeLine === 'true') {
+            isObjectTypeLine = true;
+        } else if (isObjectTypeLine === 'false') {
+            isObjectTypeLine = false;
+        } else {
+            throw new Error(
+                'Указано неверное значение параметра запроса "isObjectTypeLine"'
+            );
+        }
         const categories = await CategoryMapping.findAll({
             where: {
                 id: categoryFilter?.length ? categoryFilter : { [Op.not]: null },
@@ -30,16 +38,31 @@ class Category {
                 '$subcategories.surveys.variants.id$': variantFilter?.length
                     ? variantFilter
                     : { [Op.not]: null },
-                '$subcategories.surveys.variants.objectType.id$': objectTypeFilter?.length
-                    ? objectTypeFilter
-                    : { [Op.not]: null },
                 '$subcategories.surveys.variants.is_production$': true,
+                '$subcategories.surveys.variants.quantity_calculator_name$':
+                    isObjectTypeLine !== null
+                        ? {
+                              [Op.or]: [{ [Op.is]: null }, { [Op.not]: null }],
+                          }
+                        : { [Op.is]: null },
+                '$subcategories.surveys.variants.is_object_type_line$':
+                    isObjectTypeLine === null
+                        ? {
+                              [Op.or]: [
+                                  { [Op.is]: null },
+                                  { [Op.is]: true },
+                                  { [Op.is]: false },
+                              ],
+                          }
+                        : isObjectTypeLine === true
+                        ? { [Op.or]: [{ [Op.is]: null }, { [Op.is]: true }] }
+                        : { [Op.or]: [{ [Op.is]: null }, { [Op.is]: false }] },
             },
             order: [
                 'order',
                 [SubcategoryMapping, 'order'],
                 [SubcategoryMapping, SurveyMapping, 'order'],
-                [SubcategoryMapping, SurveyMapping, VariantMapping, 'objectTypeId'],
+                [SubcategoryMapping, SurveyMapping, VariantMapping, 'isObjectTypeLine'],
                 [SubcategoryMapping, SurveyMapping, VariantMapping, 'order'],
             ],
             include: [
@@ -54,10 +77,6 @@ class Category {
                                 {
                                     model: VariantMapping,
                                     as: 'variants',
-                                    include: [
-                                        { model: ObjectTypeMapping },
-                                        { model: HandlerMapping },
-                                    ],
                                 },
                             ],
                         },
@@ -72,9 +91,9 @@ class Category {
     async getFullContent({
         categoryFilter,
         subcategoryFilter,
-        objectTypeFilter,
         surveyFilter,
         variantFilter,
+        scenarioId,
     }) {
         const getWhere = (filters) => {
             let result = {};
@@ -93,7 +112,7 @@ class Category {
                 'order',
                 [SubcategoryMapping, 'order'],
                 [SubcategoryMapping, SurveyMapping, 'order'],
-                [SubcategoryMapping, SurveyMapping, VariantMapping, 'objectTypeId'],
+                [SubcategoryMapping, SurveyMapping, VariantMapping, 'isObjectTypeLine'],
                 [SubcategoryMapping, SurveyMapping, VariantMapping, 'order'],
             ],
             include: [
@@ -111,14 +130,15 @@ class Category {
                                     model: VariantMapping,
                                     as: 'variants',
                                     where: getWhere({
-                                        objectTypeId: objectTypeFilter,
                                         id: variantFilter,
                                     }),
                                     include: [
-                                        { model: ObjectTypeMapping, as: 'objectType' },
                                         {
-                                            model: SurveyScenarioVariantMapping,
-                                            as: 'surveyScenarioVariants',
+                                            model: ScenarioVariantMapping,
+                                            as: 'scenarioVariants',
+                                            where: getWhere({
+                                                scenarioId: scenarioId,
+                                            }),
                                         },
                                     ],
                                 },

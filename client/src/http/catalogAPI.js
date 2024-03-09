@@ -6,6 +6,7 @@ export const fetchCatalog = async ({
     objectTypeIds,
     surveyIds,
     variantIds,
+    isObjectTypeLine = null,
 }) => {
     const params = {};
     if (categoryIds) params.categoryFilter = categoryIds;
@@ -13,6 +14,7 @@ export const fetchCatalog = async ({
     if (objectTypeIds) params.objectTypeFilter = objectTypeIds;
     if (surveyIds) params.surveyFilter = surveyIds;
     if (variantIds) params.variantFilter = variantIds;
+    params.isObjectTypeLine = isObjectTypeLine;
 
     const { data } = await guestInstance.get('category/content', {
         params,
@@ -26,6 +28,7 @@ export const fetchFullCatalog = async ({
     objectTypeIds,
     surveyIds,
     variantIds,
+    scenarioId,
 }) => {
     const params = {};
     if (categoryIds) params.categoryFilter = categoryIds;
@@ -33,12 +36,11 @@ export const fetchFullCatalog = async ({
     if (objectTypeIds) params.objectTypeFilter = objectTypeIds;
     if (surveyIds) params.surveyFilter = surveyIds;
     if (variantIds) params.variantFilter = variantIds;
+    if (scenarioId) params.scenarioId = scenarioId;
 
     const { data } = await authInstance.get('category/full_content', {
         params,
     });
-
-    console.log(data);
     return data;
 };
 
@@ -153,41 +155,6 @@ export const fetchSurveys = async () => {
     return data;
 };
 
-export const createObjectType = async (objectType) => {
-    const { data } = await authInstance.post('object_type/create', objectType);
-    return data;
-};
-
-export const updateObjectType = async (id, objectType) => {
-    const { data } = await authInstance.put(`object_type/update/${id}`, objectType);
-    return data;
-};
-
-export const moveUpObjectType = async (id) => {
-    const { data } = await authInstance.put(`object_type/move_up/${id}`);
-    return data;
-};
-
-export const moveDownObjectType = async (id) => {
-    const { data } = await authInstance.put(`object_type/move_down/${id}`);
-    return data;
-};
-
-export const deleteObjectType = async (id) => {
-    const { data } = await authInstance.delete(`object_type/delete/${id}`);
-    return data;
-};
-
-export const fetchObjectType = async (id) => {
-    const { data } = await guestInstance.get(`object_type/get_one/${id}`);
-    return data;
-};
-
-export const fetchObjectTypes = async () => {
-    const { data } = await guestInstance.get(`object_type/get_all`);
-    return data;
-};
-
 export const createVariant = async (variant) => {
     const { data } = await authInstance.post('variant/create', variant);
     return data;
@@ -238,26 +205,6 @@ export const fetchVariantsByIds = async (variantIds) => {
 
 export const fetchUnits = async () => {
     const { data } = await authInstance.get('unit/get_all');
-    return data;
-};
-
-export const createHandler = async (handler) => {
-    const { data } = await authInstance.post('handler/create', handler);
-    return data;
-};
-
-export const updateHandler = async (id, handler) => {
-    const { data } = await authInstance.put(`handler/update/${id}`, handler);
-    return data;
-};
-
-export const deleteHandler = async (id) => {
-    const { data } = await authInstance.delete(`handler/delete/${id}`);
-    return data;
-};
-
-export const fetchHandlers = async () => {
-    const { data } = await authInstance.get('handler/get_all');
     return data;
 };
 

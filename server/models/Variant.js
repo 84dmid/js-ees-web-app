@@ -6,10 +6,7 @@ import { Variant as VariantMapping } from './mapping.js';
 import { Category as CategoryMapping } from './mapping.js';
 import { Subcategory as SubcategoryMapping } from './mapping.js';
 import { Survey as SurveyMapping } from './mapping.js';
-// import { Unit as UnitMapping } from './mapping.js';
-import { ObjectType as ObjectTypeMapping } from './mapping.js';
-import { Handler as HandlerMapping } from './mapping.js';
-import { VariantProp as VariantPropMapping } from './mapping.js';
+// import { VariantProp as VariantPropMapping } from './mapping.js'; // на будущее
 
 const include = [
     {
@@ -24,9 +21,6 @@ const include = [
             },
         ],
     },
-    // { model: UnitMapping, as: 'unit', attributes: ['id', 'name'] },
-    { model: ObjectTypeMapping, as: 'objectType', attributes: ['id', 'name'] },
-    { model: HandlerMapping, as: 'handler', attributes: ['id', 'name', 'description'] },
 ];
 
 class Variant {
@@ -37,7 +31,6 @@ class Variant {
         if (variantIds) where.id = variantIds;
         const variants = await VariantMapping.findAll({
             where,
-            include: [{ model: HandlerMapping, attributes: ['name'] }],
         });
         return variants;
     }
@@ -48,14 +41,16 @@ class Variant {
             attributes: [
                 'id',
                 'description',
+                'defaultQuantity',
+                'quantityCalculatorName',
                 'price',
                 'normDoc',
                 'justification',
                 'unit',
-                'objectTypeId',
+                'isObjectTypeLine',
                 'properties',
                 'isProduction',
-                'handlerId',
+                // 'handlerId',
                 'dynamicPriceIdAndLevel',
             ],
             include,
@@ -79,13 +74,13 @@ class Variant {
         return variant;
     }
 
-    async moveDown(id, { surveyId, objectTypeId }) {
+    async moveDown(id, { surveyId }) {
         const variant = await VariantMapping.findByPk(id);
         if (!variant) {
             throw new Error('Исследование не найдено в БД');
         }
         const maxOrder = await VariantMapping.max('order', {
-            where: { surveyId, objectTypeId },
+            where: { surveyId, isObjectTypeLine: variant.isObjectTypeLine },
         });
         if (variant.order === maxOrder) {
             return { message: 'Исследование уже в самом низу' };
@@ -96,7 +91,7 @@ class Variant {
                     [Op.gt]: variant.order,
                 },
                 surveyId,
-                objectTypeId,
+                isObjectTypeLine: variant.isObjectTypeLine,
             },
             order: [['order', 'ASC']], // Сортировка по возрастанию
         });
@@ -109,13 +104,13 @@ class Variant {
         return variant;
     }
 
-    async moveUp(id, { surveyId, objectTypeId }) {
+    async moveUp(id, { surveyId }) {
         const variant = await VariantMapping.findByPk(id);
         if (!variant) {
             throw new Error('Исследование не найдено в БД');
         }
         const minOrder = await VariantMapping.min('order', {
-            where: { surveyId, objectTypeId },
+            where: { surveyId, isObjectTypeLine: variant.isObjectTypeLine },
         });
         if (variant.order === minOrder) {
             return { message: 'Исследование уже в самом верху' };
@@ -126,7 +121,7 @@ class Variant {
                     [Op.lt]: variant.order,
                 },
                 surveyId,
-                objectTypeId,
+                isObjectTypeLine: variant.isObjectTypeLine,
             },
             order: [['order', 'DESC']], // Сортировка по убыванию
         });

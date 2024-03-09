@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
-import { getLevelPriceById } from '../handlers/variantPriceHandler';
+import { priceCalculator } from '../calculators/variantPriceHandler';
 
 class BasketStore {
+    _catalog = [];
     _isObjectTypeLine = null;
     _lendAreaInSqM = null;
     _trackLengthInM = null;
@@ -11,6 +12,13 @@ class BasketStore {
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    get catalog() {
+        return this._catalog;
+    }
+    set catalog(catalog) {
+        this._catalog = catalog;
     }
 
     get isObjectTypeLine() {
@@ -45,7 +53,7 @@ class BasketStore {
         return this._variants.reduce((sum, item) => {
             let price = item.price;
             if (item.dynamicPriceIdAndLevel) {
-                price = getLevelPriceById(this._variants, item.dynamicPriceIdAndLevel);
+                price = priceCalculator(this._variants, item.dynamicPriceIdAndLevel);
             }
             return sum + price * item.quantity;
         }, 0);
@@ -78,7 +86,7 @@ class BasketStore {
     getVariantById(id) {
         const variant = this._variants.find((item) => +item.variantId === +id);
         if (variant.dynamicPriceIdAndLevel) {
-            variant.price = getLevelPriceById(
+            variant.price = priceCalculator(
                 this._variants,
                 variant.dynamicPriceIdAndLevel
             );

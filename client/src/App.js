@@ -9,9 +9,11 @@ import NavBar from './components/NavBar.js';
 import { AppContext } from './components/AppContext.js';
 import userAPI from './http/userAPI.js';
 import basketAPI from './http/basketAPI.js';
+import Footer from './components/Footer.js';
+import { fetchCatalog } from './http/catalogAPI.js';
 
 const App = observer(() => {
-    const { user, basket, isLoading } = useContext(AppContext);
+    const { user, basket, isLoading, catalog } = useContext(AppContext);
     const [fetching, setFetching] = useState(true);
 
     useEffect(() => {
@@ -35,9 +37,27 @@ const App = observer(() => {
                     `Ошибка проверки данных пользователя или загрузки корзины: ${error}`
                 )
             )
+            .then(() => {
+                return fetchCatalog({
+                    categoryIds: catalog.checkedCategories,
+                    subcategoryIds: catalog.checkedSubcategories,
+                    objectTypeIds: catalog.checkedObjectTypes,
+                    surveyIds: catalog.surveyFilter,
+                    variantIds: catalog.variantFilter,
+                    isObjectTypeLine: basket.isObjectTypeLine,
+                });
+            })
+            .then((data) => (catalog.content = data))
             .finally(() => setFetching(false));
         // eslint-disable-next-line
-    }, []);
+    }, [
+        catalog.checkedCategories,
+        catalog.checkedSubcategories,
+        catalog.checkedObjectTypes,
+        catalog.surveyFilter,
+        catalog.variantFilter,
+        basket.isObjectTypeLine,
+    ]);
 
     useEffect(() => {
         isLoading.state = fetching;
@@ -50,8 +70,11 @@ const App = observer(() => {
 
     return (
         <BrowserRouter>
-            <NavBar />
-            <AppRouter />
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <NavBar />
+                <AppRouter />
+                <Footer />
+            </div>
         </BrowserRouter>
     );
 });

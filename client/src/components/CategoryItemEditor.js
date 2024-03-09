@@ -101,7 +101,6 @@ const CategoryItemEditor = ({
                 text={`Подтвердите удаление категории: "${name}"`}
             />
             <tr className="table-secondary">
-                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -117,20 +116,25 @@ const CategoryItemEditor = ({
                         getForm('text', 'name', 'Категория')
                     ) : (
                         <>
-                            <div style={{ fontSize: '0.875em' }}>Категория</div>
-                            <h5>{category.name}</h5>
+                            {/* <div style={{ fontSize: '0.875em' }}>Категория</div> */}
+                            <p className="m-0" style={{ fontSize: '1.2em' }}>
+                                {category.name}
+                            </p>
                         </>
                     )}
                 </td>
+                <td>
+                    <Button
+                        onClick={handleCreateClick}
+                        size="sm"
+                        variant="outline-primary"
+                        className="w-100 text-start"
+                    >
+                        ➕ Подкатегория
+                    </Button>
+                </td>
                 <td className="align-middle text-end">
                     <ButtonGroup size="sm" className="w-100">
-                        <Button
-                            onClick={handleCreateClick}
-                            size="sm"
-                            variant="outline-primary"
-                        >
-                            ➕
-                        </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
                         </Button>

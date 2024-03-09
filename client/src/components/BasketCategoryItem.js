@@ -1,11 +1,11 @@
 import React from 'react';
 
-import SubcategoryItem from './SubcategoryItem.js';
+import BasketSubcategoryItem from './BasketSubcategoryItem.js';
 
-const CategoryItem = ({ name, subcategories }) => {
+const BasketCategoryItem = ({ name, subcategories }) => {
     const subcategoryList = subcategories.map((subcategory) => {
         return (
-            <SubcategoryItem
+            <BasketSubcategoryItem
                 key={subcategory.id + 'subcategory'}
                 name={subcategory.name}
                 surveys={subcategory.surveys}
@@ -17,7 +17,7 @@ const CategoryItem = ({ name, subcategories }) => {
         <>
             <tr className="table-secondary">
                 {/* <td></td> */}
-                <td colSpan={6}>
+                <td colSpan={7}>
                     {/* <p style={{ fontSize: '0.875em' }} className="m-0">
                         Тип исследований
                     </p> */}
@@ -31,4 +31,4 @@ const CategoryItem = ({ name, subcategories }) => {
     );
 };
 
-export default CategoryItem;
+export default BasketCategoryItem;

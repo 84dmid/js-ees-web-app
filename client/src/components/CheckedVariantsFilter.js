@@ -9,8 +9,10 @@ const CheckedVariantsFilter = observer(() => {
 
     const setSurveyFilter = (event) => {
         if (event.target.checked) {
-            if (!basket.variants.length) return;
-            catalog.surveyFilter = basket.variants.map((item) => item.variant.surveyId);
+            if (basket.variants.length === 0) return;
+            catalog.surveyFilter = basket.variants.map((item) => {
+                return item.surveyId;
+            });
         } else {
             catalog.surveyFilter = [];
         }
@@ -26,16 +28,16 @@ const CheckedVariantsFilter = observer(() => {
 
     return (
         <Form.Group className="mb-3">
-            <b>Исследования</b>
+            {/* <b>Исследования</b> */}
             <Form.Check
-                type="switch"
+                type="checkbox"
                 id="checkedSurveyFilter"
                 onChange={setSurveyFilter}
                 checked={catalog.surveyFilter.length}
-                label="Показать виды исследований с отмеченными вариантами "
+                label="Показать отмеченные виды исследований со всеми вариантами"
             />
             <Form.Check
-                type="switch"
+                type="checkbox"
                 id="checkedVariantsFilter"
                 onChange={setVariantFilter}
                 checked={catalog.variantFilter.length}

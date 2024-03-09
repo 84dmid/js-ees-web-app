@@ -1,15 +1,8 @@
-import React, { useState } from 'react';
-import {
-    Container,
-    Navbar,
-    Nav,
-    Button,
-    Spinner,
-    Row,
-    Col,
-    Stack,
-} from 'react-bootstrap';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Container, Navbar, Nav, Button, Row, Col, Stack } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
+
+import '../styles.css';
 
 const User = () => {
     return (
@@ -49,28 +42,3 @@ const User = () => {
 };
 
 export default User;
-
-// return (
-//     <Navbar bg="dark" variant="dark" className="mb-2 d-flex flex-column flex-md-row">
-//         <div className="d-flex">
-//             <NavLink to="/" className="navbar-brand m-2">
-//                 Инженерно-экологические изыскания
-//             </NavLink>
-//         </div>
-//         <Nav className="w-100 d-flex flex-column flex-md-row">
-//             <NavLink to="/" className="nav-link">
-//                 Каталог
-//             </NavLink>
-//             <NavLink to="/basket" className="nav-link">
-//                 Корзина
-//             </NavLink>
-//             <NavLink to="/admin" className="nav-link">
-//                 Панель управления
-//             </NavLink>
-//             <NavLink to="/user" className="nav-link">
-//                 Личный кабинет
-//             </NavLink>
-//         </Nav>
-//         <Button className="mt-md-0 mt-2">Выйти</Button>
-//     </Navbar>
-// );

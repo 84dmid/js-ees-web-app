@@ -3,43 +3,12 @@ import { Op } from 'sequelize';
 import sequelize from '../sequelize.js';
 
 import { Survey as SurveyMapping } from './mapping.js';
-import { Variant as VariantMapping } from './mapping.js';
-
-import { Category as CategoryMapping } from './mapping.js';
-import { Subcategory as SubcategoryMapping } from './mapping.js';
-import { ObjectType as ObjectTypeMapping } from './mapping.js';
-import { Handler as HandlerMapping } from './mapping.js';
-import { VariantProp as VariantPropMapping } from './mapping.js';
 
 class Survey {
     async getAll() {
         const surveys = await SurveyMapping.findAll();
         return surveys;
     }
-
-    // async getAll({ categoryId, subcategoryId }) {
-    //     const where = {};
-    //     if (categoryId) where.categoryId = categoryId;
-    //     if (subcategoryId) where.subcategoryId = subcategoryId;
-
-    //     const surveys = await SurveyMapping.findAll({
-    //         where,
-    //         order: [
-    //             'categoryId',
-    //             'subcategoryId',
-    //             [{ model: VariantMapping }, 'objectTypeId'],
-    //         ],
-    //         include: [
-    //             { model: CategoryMapping, as: 'category' },
-    //             { model: SubcategoryMapping, as: 'subcategory' },
-    //             {
-    //                 model: VariantMapping,
-    //                 include: [{ model: ObjectTypeMapping, as: 'objectType' }],
-    //             },
-    //         ],
-    //     });
-    //     return surveys;
-    // }
 
     async getOne(id) {
         const survey = await SurveyMapping.findByPk(id);

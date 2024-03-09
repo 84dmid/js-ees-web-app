@@ -10,8 +10,10 @@ import {
     moveUpSurvey,
     updateSurvey,
 } from '../http/catalogAPI.js';
-import CreatingVariantModalWindow from './CreatingVariantModalWindow.js';
-import { toJS } from 'mobx';
+import VariantEditorAndCreatorModalWindow from './VariantEditorAndCreatorModalWindow.js';
+// import VariantEditorAndCreatorModalWindow from './CreatingVariantModalWindow.js';
+import CatalogEditorSubheadings from './CatalogEditorSubheadings.js';
+import CatalogEditorSubheadingsForObjectTypes from './CatalogEditorSubheadingsForObjectTypes.js';
 
 const SurveyItemEditor = ({
     id,
@@ -28,18 +30,15 @@ const SurveyItemEditor = ({
     const [showCreatingVariantWindow, setShowCreatingVariantWindow] = useState(false);
 
     const variantsList = [];
-    let curObjectTypeId;
+    let curObjectType;
     variants.forEach((variant) => {
-        // console.log(toJS(variant));
-        if (variant.objectType && curObjectTypeId !== variant.objectType.id) {
-            curObjectTypeId = variant.objectType.id;
+        if (variant.isObjectTypeLine !== curObjectType) {
+            curObjectType = variant.isObjectTypeLine;
             variantsList.push(
-                <tr key={variant.objectType.id + 'objectType'}>
-                    <td></td>
-                    <td colSpan={6}>
-                        <Form.Text>{variant.objectType.description}:</Form.Text>
-                    </td>
-                </tr>
+                <CatalogEditorSubheadingsForObjectTypes
+                    key={variant.id + 'objectTypeTextTableRow'}
+                    isObjectTypeLine={curObjectType}
+                />
             );
         }
         variantsList.push(
@@ -47,13 +46,13 @@ const SurveyItemEditor = ({
                 key={variant.id + 'variant'}
                 id={variant.id}
                 surveyId={id}
+                surveyName={name}
                 description={variant.description}
                 unit={variant.unit}
-                objectTypeId={variant.objectType.id}
+                isObjectTypeLine={variant.isObjectTypeLine}
                 unitPrice={variant.price}
                 order={variant.order}
                 isProduction={variant.isProduction}
-                scenarios={variant.surveyScenarioVariants}
                 setCatalogEditingToggle={setCatalogEditingToggle}
             />
         );
@@ -113,21 +112,26 @@ const SurveyItemEditor = ({
 
     return (
         <>
-            <CreatingVariantModalWindow
-                show={showCreatingVariantWindow}
-                setShow={setShowCreatingVariantWindow}
-                createVariant={createVariant}
-                surveyId={id}
-                setCatalogEditingToggle={setCatalogEditingToggle}
-            />
-            <DeletingModalWindow
-                show={showDeletingWindow}
-                setShow={setShowDeletingWindow}
-                deleteFunction={deleteCallback}
-                text={`Подтвердите удаление вида исследований: "${name}"`}
-            />
+            {showCreatingVariantWindow && (
+                <VariantEditorAndCreatorModalWindow
+                    show={showCreatingVariantWindow}
+                    setShow={setShowCreatingVariantWindow}
+                    createVariant={createVariant}
+                    surveyId={id}
+                    surveyName={name}
+                    setCatalogEditingToggle={setCatalogEditingToggle}
+                />
+            )}
+            {showDeletingWindow && (
+                <DeletingModalWindow
+                    show={showDeletingWindow}
+                    setShow={setShowDeletingWindow}
+                    deleteFunction={deleteCallback}
+                    text={`Подтвердите удаление вида исследований: "${name}"`}
+                />
+            )}
+
             <tr>
-                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -143,19 +147,22 @@ const SurveyItemEditor = ({
                         getForm('text', 'name', 'Вид исследования')
                     ) : (
                         <>
-                            <b>{survey.name}</b>
+                            <b style={{ fontSize: '0.95em' }}>{survey.name}</b>
                         </>
                     )}
                 </td>
+                <td className="align-middle">
+                    <Button
+                        className="w-100 text-start"
+                        onClick={handleCreateClick}
+                        size="sm"
+                        variant="outline-primary"
+                    >
+                        ➕ Вариант
+                    </Button>
+                </td>
                 <td className="align-middle text-end">
                     <ButtonGroup size="sm" className="w-100">
-                        <Button
-                            onClick={handleCreateClick}
-                            size="sm"
-                            variant="outline-primary"
-                        >
-                            ➕
-                        </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
                         </Button>
@@ -165,6 +172,7 @@ const SurveyItemEditor = ({
                     </ButtonGroup>
                 </td>
             </tr>
+            {filter.isVariantsHidden || <CatalogEditorSubheadings />}
             {filter.isVariantsHidden || variantsList}
         </>
     );

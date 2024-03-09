@@ -1,11 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Table, Button, Form, FloatingLabel } from 'react-bootstrap';
+import {
+    Table,
+    Button,
+    Form,
+    FloatingLabel,
+    InputGroup,
+    Row,
+    Col,
+} from 'react-bootstrap';
 
 import { AppContext } from './AppContext.js';
 import { createCategory, fetchFullCatalog } from '../http/catalogAPI.js';
 import CategoryItemEditor from './CategoryItemEditor.js';
-import { fetchSurveyScenarios } from '../http/surveyScenarioAPI.js';
+import { fetchScenario, fetchScenarios } from '../http/scenarioAPI.js';
 
 const initFilter = {
     isSubcategoriesHidden: false,
@@ -14,31 +22,34 @@ const initFilter = {
 };
 
 const CatalogEditor = observer(() => {
-    const { catalog, isLoading } = useContext(AppContext);
+    const { isLoading, catalogEditor } = useContext(AppContext);
     const [fetching, setFetching] = useState(true);
     const [catalogEditingToggle, setCatalogEditingToggle] = useState(false);
     const [filter, setFilter] = useState(initFilter);
-    const [surveyScenarios, setSurveyScenarios] = useState([]);
+    const [scenarios, setScenarios] = useState([]);
+    const [isScenarioFilter, setIsScenarioFilter] = useState('');
 
     useEffect(() => {
-        fetchSurveyScenarios()
+        fetchFullCatalog({
+            scenarioId: isScenarioFilter ? catalogEditor.curScenario?.id : undefined,
+        })
             .then((data) => {
-                setSurveyScenarios(data);
-            })
-            .catch((error) => console.error(`Survey scenarios fetching error: ${error}`))
-            .finally(() => setFetching(false));
-    }, []);
-
-    useEffect(() => {
-        fetchFullCatalog({})
-            .then((data) => {
-                catalog.content = data;
+                catalogEditor.content = data;
             })
             .finally(() => {
                 setFetching(false);
             });
         // eslint-disable-next-line
-    }, [catalogEditingToggle]);
+    }, [catalogEditingToggle, isScenarioFilter]);
+
+    useEffect(() => {
+        fetchScenarios({ isObjectTypeLine: [true, false] })
+            .then((data) => {
+                setScenarios(data);
+            })
+            .catch((error) => console.error(`Survey scenarios fetching error: ${error}`))
+            .finally(() => setFetching(false));
+    }, []);
 
     useEffect(() => {
         isLoading.state = fetching;
@@ -49,7 +60,7 @@ const CatalogEditor = observer(() => {
         return null;
     }
 
-    const surveyScenariosList = surveyScenarios.map((item) => {
+    const scenariosList = scenarios.map((item) => {
         const objectTypeName =
             item.isObjectTypeLine === null
                 ? ' __ (тип объектов не определён)'
@@ -64,7 +75,7 @@ const CatalogEditor = observer(() => {
         );
     });
 
-    const categoryList = catalog.content.map((category) => {
+    const categoryList = catalogEditor.content.map((category) => {
         return (
             <CategoryItemEditor
                 key={category.id + 'category'}
@@ -87,11 +98,24 @@ const CatalogEditor = observer(() => {
             .catch((error) => console.error(`Category create error: ${error}`));
     };
 
+    const handleChangeScenario = (event) => {
+        if (!event.target.value) {
+            catalogEditor.curScenario = [];
+        } else {
+            fetchScenario(+event.target.value)
+                .then((data) => (catalogEditor.curScenario = data))
+                .catch((error) => console.error(`Scenario fetching error: ${error}`));
+        }
+    };
+
     return (
         <>
-            <div className="border-top border-bottom pb-2 mb-2">
+            <h4>Редактор каталога</h4>
+
+            <div className="mt-2 mb-2">
                 <Form.Group>
                     <Form.Check
+                        inline
                         label="Показать всё"
                         name="filter"
                         type="radio"
@@ -106,7 +130,8 @@ const CatalogEditor = observer(() => {
                         }}
                     />
                     <Form.Check
-                        label="Скрыть субкатегории"
+                        inline
+                        label="Скрыть подкатегории"
                         name="filter"
                         type="radio"
                         id="isSubcategoriesHidden"
@@ -119,6 +144,7 @@ const CatalogEditor = observer(() => {
                         }}
                     />
                     <Form.Check
+                        inline
                         label="Скрыть исследования"
                         name="filter"
                         type="radio"
@@ -132,6 +158,7 @@ const CatalogEditor = observer(() => {
                         }}
                     />
                     <Form.Check
+                        inline
                         label="Скрыть варианты"
                         name="filter"
                         type="radio"
@@ -146,43 +173,51 @@ const CatalogEditor = observer(() => {
                     />
                 </Form.Group>
             </div>
+
             <div>
-                <FloatingLabel label="Сценарий" controlId="scenarios">
-                    <Form.Select>
+                <Form.Label htmlFor="scenarioSelector">
+                    Выберите редактируемый сценарий из списка
+                </Form.Label>
+                <InputGroup className="mt-0 mb-2">
+                    {/* <FloatingLabel
+                        label="Выберите редактируемый сценарий из списка"
+                        controlId="scenarioSelector"
+                    > */}
+                    <Form.Select
+                        id="scenarioSelector"
+                        value={
+                            Object.keys(catalogEditor.curScenario).length !== 0
+                                ? catalogEditor.curScenario.id
+                                : ''
+                        }
+                        onChange={handleChangeScenario}
+                    >
                         <option value="">...</option>
-                        {surveyScenariosList}
+                        {scenariosList}
                     </Form.Select>
-                </FloatingLabel>
+                    {/* </FloatingLabel> */}
+                    <InputGroup.Checkbox
+                        disabled={catalogEditor.curScenario.id ? false : true}
+                        id="scenarioVariantsFilter"
+                        checked={isScenarioFilter}
+                        onChange={(event) => setIsScenarioFilter(event.target.checked)}
+                    />
+                    <InputGroup.Text> Фильтровать</InputGroup.Text>
+                </InputGroup>
             </div>
-            <Table hover size="sm" className="mb-0">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th
-                            colSpan={1}
-                            className="align-middle text-center"
-                            style={{ width: '3em' }}
-                        ></th>
-                        <th className="align-middle text-center">
-                            Краткое описание варианта
-                        </th>
-                        <th className="align-middle text-center">Сце-нарий</th>
-                        <th className="align-middle text-center">Ед. изм.</th>
-                        <th className="align-middle text-center">Цена ед. изм.</th>
-                        <th className="align-middle text-center">Опции</th>
-                    </tr>
-                </thead>
+
+            <Table size="sm" className="mb-0">
                 <tbody style={{ maxHeight: '200px', overflowY: 'auto' }}>
                     <tr>
-                        <td colSpan={6}></td>
-                        <td>
+                        <td colSpan={5}></td>
+                        <td colSpan={2}>
                             <Button
+                                className="w-100 text-start"
                                 size="sm"
                                 variant="outline-primary"
-                                className="d-grid w-100 text-start"
                                 onClick={handleCreateClick}
                             >
-                                ➕Категория
+                                ➕ Категория
                             </Button>
                         </td>
                     </tr>

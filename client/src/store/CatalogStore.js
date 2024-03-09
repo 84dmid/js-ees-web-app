@@ -11,9 +11,6 @@ class CatalogStore {
 
     _surveyFilter = [];
 
-    _objectTypes = [];
-    _checkedObjectTypes = [];
-
     _variantFilter = [];
 
     constructor() {
@@ -42,14 +39,6 @@ class CatalogStore {
 
     get surveyFilter() {
         return this._surveyFilter;
-    }
-
-    get objectTypes() {
-        return this._objectTypes;
-    }
-
-    get checkedObjectTypes() {
-        return this._checkedObjectTypes;
     }
 
     get variantFilter() {
@@ -102,14 +91,6 @@ class CatalogStore {
 
     set surveyFilter(surveyIds) {
         this._surveyFilter = surveyIds;
-    }
-
-    set objectTypes(objectTypes) {
-        this._objectTypes = objectTypes;
-    }
-
-    set checkedObjectTypes(objectTypeIds) {
-        this._checkedObjectTypes = objectTypeIds;
     }
 
     checkObjectType(objectTypeId) {

@@ -10,13 +10,7 @@ const AdminNavBar = () => {
                     Редактор каталога
                 </NavLink>
                 <NavLink to="/admin/edit/surveyScenarios" className="nav-link">
-                    Редактор базовых вариантов состава изысканий
-                </NavLink>
-                <NavLink to="/admin/edit/objectTypes" className="nav-link">
-                    Редактор типов объекта
-                </NavLink>
-                <NavLink to="/admin/edit/handlers" className="nav-link">
-                    Редактор обработчиков количества единиц измерения
+                    Редактор сценариев
                 </NavLink>
                 <NavLink to="/admin/statistics" className="nav-link ">
                     Статистика

@@ -102,7 +102,6 @@ const SubcategoryItemEditor = ({
                 text={`Подтвердите удаление подкатегории: "${name}"`}
             />
             <tr className="table-light">
-                <td className="align-middle"></td>
                 <td className="align-middle">
                     <ButtonGroup size="sm">
                         <Button onClick={moveDown} variant="outline-secondary">
@@ -118,16 +117,25 @@ const SubcategoryItemEditor = ({
                         getForm('text', 'name', 'Подкатегория')
                     ) : (
                         <>
-                            <div style={{ fontSize: '0.875em' }}>Подкатегория</div>
-                            <h6>{subcategory.name}</h6>
+                            {/* <div style={{ fontSize: '0.875em' }}>Подкатегория</div> */}
+                            <p className="m-0" style={{ fontSize: '1.1em' }}>
+                                {subcategory.name}
+                            </p>
                         </>
                     )}
                 </td>
+                <td className="align-middle">
+                    <Button
+                        onClick={handleCreateClick}
+                        variant="outline-primary"
+                        size="sm"
+                        className="w-100 text-start"
+                    >
+                        ➕ Исследование
+                    </Button>
+                </td>
                 <td className="align-middle text-end">
                     <ButtonGroup size="sm" className="w-100">
-                        <Button onClick={handleCreateClick} variant="outline-primary">
-                            ➕
-                        </Button>
                         <Button variant="outline-primary" onClick={handleEditClick}>
                             {isEdit ? <>💾</> : <>✏️</>}
                         </Button>

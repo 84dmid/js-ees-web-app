@@ -1,5 +1,5 @@
 import sequelize from '../sequelize.js';
-import database, { STRING, TEXT } from 'sequelize';
+import database, { BOOLEAN, STRING, TEXT } from 'sequelize';
 
 const { DataTypes } = database;
 
@@ -55,11 +55,14 @@ const Variant = sequelize.define('variant', {
     order: { type: DataTypes.INTEGER, allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: false },
     unit: { type: DataTypes.STRING, allowNull: false },
+    defaultQuantity: { type: DataTypes.FLOAT, allowNull: true },
+    quantityCalculatorName: { type: DataTypes.STRING, allowNull: true },
     price: { type: DataTypes.INTEGER, allowNull: false },
-    dynamicPriceIdAndLevel: { type: DataTypes.TEXT },
+    isObjectTypeLine: { type: BOOLEAN, allowNull: true, defaultValue: null },
     normDoc: { type: DataTypes.TEXT, defaultValue: '' },
     justification: { type: DataTypes.TEXT, defaultValue: '' },
     properties: { type: DataTypes.TEXT, defaultValue: '' },
+    dynamicPriceIdAndLevel: { type: DataTypes.TEXT },
     isProduction: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
 
@@ -116,7 +119,7 @@ const VariantProp = sequelize.define('variantProp', {
     quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
-const SurveyScenario = sequelize.define('surveyScenario', {
+const Scenario = sequelize.define('scenario', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     order: { type: DataTypes.INTEGER },
     name: { type: DataTypes.STRING, allowNull: false },
@@ -125,7 +128,7 @@ const SurveyScenario = sequelize.define('surveyScenario', {
     isProduction: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
 
-const SurveyScenarioVariant = sequelize.define('surveyScenarioVariant', {});
+const ScenarioVariant = sequelize.define('scenarioVariant', {});
 
 User.hasMany(Project, { onDelete: 'CASCADE' });
 Project.belongsTo(User);
@@ -164,21 +167,21 @@ Variant.hasMany(VariantProp, { onDelete: 'CASCADE' });
 VariantProp.belongsTo(Variant);
 
 // many-to-many
-Variant.belongsToMany(SurveyScenario, {
-    through: SurveyScenarioVariant,
+Variant.belongsToMany(Scenario, {
+    through: ScenarioVariant,
     onDelete: 'CASCADE',
     // foreignKey: 'variantId'
 });
-SurveyScenario.belongsToMany(Variant, {
-    through: SurveyScenarioVariant,
+Scenario.belongsToMany(Variant, {
+    through: ScenarioVariant,
     onDelete: 'CASCADE',
     // foreignKey: 'surveyScenarioId'
 });
 // super many-to-many https://sequelize.org/master/manual/advanced-many-to-many.html
-Variant.hasMany(SurveyScenarioVariant);
-SurveyScenarioVariant.belongsTo(Variant);
-SurveyScenario.hasMany(SurveyScenarioVariant);
-SurveyScenarioVariant.belongsTo(SurveyScenario);
+Variant.hasMany(ScenarioVariant);
+ScenarioVariant.belongsTo(Variant);
+Scenario.hasMany(ScenarioVariant);
+ScenarioVariant.belongsTo(Scenario);
 
 export {
     User,
@@ -194,6 +197,6 @@ export {
     ObjectType,
     Handler,
     VariantProp,
-    SurveyScenario,
-    SurveyScenarioVariant,
+    Scenario,
+    ScenarioVariant,
 };

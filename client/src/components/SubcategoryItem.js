@@ -17,10 +17,14 @@ const SubcategoryItem = ({ name, surveys }) => {
     return (
         <>
             <tr className="table-light">
-                <td></td>
-                <td colSpan={5}>
-                    {/* <div style={{ fontSize: '0.875em' }}>Подкатегория исследований</div> */}
-                    <h6>{name}</h6>
+                {/* <td></td> */}
+                <td colSpan={6}>
+                    {/* <p style={{ fontSize: '0.875em' }} className="m-0">
+                        Подтип исследований
+                    </p> */}
+                    <p className="m-0" style={{ fontSize: '1.1em' }}>
+                        {name}
+                    </p>
                 </td>
             </tr>
             {surveyList}

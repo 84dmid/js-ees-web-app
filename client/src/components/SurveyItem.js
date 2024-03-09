@@ -1,31 +1,35 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
 import VariantItem from './VariantItem.js';
+import CatalogSubheadingsForObjectTypes from './CatalogSubheadingsForObjectTypes.js';
+import CatalogSubheadings from './CatalogSubheadings.js';
 
 const SurveyItem = ({ id, name, variants }) => {
     const variantsList = [];
-    let curObjectTypeId;
+
+    let curObjectType;
     variants.forEach((variant) => {
-        if (variant.objectType && curObjectTypeId !== variant.objectType.id) {
-            curObjectTypeId = variant.objectType.id;
+        if (variant.isObjectTypeLine !== curObjectType) {
+            curObjectType = variant.isObjectTypeLine;
             variantsList.push(
-                <tr key={variant.objectType.id + 'objectType'}>
-                    <td></td>
-                    <td colSpan={6}>
-                        <Form.Text>{variant.objectType.description}:</Form.Text>
-                    </td>
-                </tr>
+                <CatalogSubheadingsForObjectTypes
+                    key={variant.id + 'objectTypeTextTableRow'}
+                    isEditor={false}
+                    isObjectTypeLine={curObjectType}
+                />
             );
         }
+
         variantsList.push(
             <VariantItem
-                handler={variant.handler?.name}
                 key={variant.id + 'variant'}
                 id={variant.id}
                 surveyId={id}
                 description={variant.description}
                 unit={variant.unit}
+                defaultQuantity={variant.defaultQuantity}
                 unitPrice={variant.price}
+                isObjectTypeLine={variant.isObjectTypeLine}
+                quantityCalculatorName={variant.quantityCalculatorName}
                 dynamicUnitPriceIdAndLevel={variant.dynamicPriceIdAndLevel}
             />
         );
@@ -34,11 +38,11 @@ const SurveyItem = ({ id, name, variants }) => {
     return (
         <>
             <tr>
-                <td></td>
-                <td colSpan={5} className="">
-                    <b>{name}</b>
+                <td colSpan={6}>
+                    <strong style={{ fontSize: '0.95em' }}>{name}</strong>
                 </td>
             </tr>
+            <CatalogSubheadings />
 
             {variantsList}
         </>
