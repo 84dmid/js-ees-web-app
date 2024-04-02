@@ -3,6 +3,22 @@ GET /api/basket/get_one HTTP/1.1
 Host: localhost:7000
 Cookie: basketId=s%3A66.D%2FroMsNe6oWEHGwMFcCJKaOr9LHt3L4sfvihj3AMwfI
 
+
+### Получить ссылку на проект
+GET  /api/basket/get_link/d64d2da0-8826-4922-8525-35951e0941c9 HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A106.sv0kLHb1z0xu3SRwBTTbL%2FXiRApAY1DUJGgr1Bk79Zk
+
+
+### Создать ссылку на соотояние проекта в текущий момент
+PUT /api/basket/create_link HTTP/1.1
+Host: localhost:7000
+Cookie: basketId=s%3A106.sv0kLHb1z0xu3SRwBTTbL%2FXiRApAY1DUJGgr1Bk79Zk
+
+
+
+
+
 ### Изменить параметры проекта в корзине
 PUT /api/basket/project_params HTTP/1.1
 Host: localhost:7000

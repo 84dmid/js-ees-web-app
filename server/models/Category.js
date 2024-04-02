@@ -39,12 +39,12 @@ class Category {
                     ? variantFilter
                     : { [Op.not]: null },
                 '$subcategories.surveys.variants.is_production$': true,
-                '$subcategories.surveys.variants.quantity_calculator_name$':
-                    isObjectTypeLine !== null
-                        ? {
-                              [Op.or]: [{ [Op.is]: null }, { [Op.not]: null }],
-                          }
-                        : { [Op.is]: null },
+                // '$subcategories.surveys.variants.quantity_calculator_name$':
+                //     isObjectTypeLine !== null
+                //         ? {
+                //               [Op.or]: [{ [Op.is]: null }, { [Op.not]: null }],
+                //           }
+                //         : { [Op.is]: null },
                 '$subcategories.surveys.variants.is_object_type_line$':
                     isObjectTypeLine === null
                         ? {

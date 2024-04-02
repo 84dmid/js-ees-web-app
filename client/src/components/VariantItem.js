@@ -1,11 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { observer } from 'mobx-react-lite';
 
 import basketAPI from '../http/basketAPI.js';
 import { AppContext } from '../components/AppContext.js';
-import { quantityCalculators } from '../calculators/quantityCalculators.js';
-import { priceCalculator } from '../calculators/variantPriceHandler.js';
 import VariantModalWindow from './VariantModalWindow.js';
 
 function formatNumberWithSpaces(number) {
@@ -18,29 +16,32 @@ function formatNumberWithSpaces(number) {
 const VariantItem = observer(
     ({
         surveyId,
+        surveyName,
         id,
         description,
+        normDoc,
+        properties,
         unit,
         defaultQuantity = null,
         unitPrice,
         isObjectTypeLine,
-        dynamicUnitPriceIdAndLevel,
         quantityCalculatorName = null,
+        quantity,
+        checked,
+        justification,
     }) => {
-        const { basket } = useContext(AppContext);
-        const [quantity, setQuantity] = useState(defaultQuantity || 1);
-        const [isChecked, setIsChecked] = useState(false);
-        const [dynamicUnitPrice, setDynamicUnitPrice] = useState('');
+        const { catalog } = useContext(AppContext);
         const [isShowModal, setIsShowModal] = useState(false);
 
-        const handleChangeQuantity = (quantity) => {
-            setQuantity(quantity); // срабатывает асинхронно, сразу использовать quantity нельзя
-            if (quantity <= 0) return;
-            if (basket.variants.includes(id)) {
+        const handleChangeQuantity = (newQuantity) => {
+            if (newQuantity <= 0) return;
+            if (
+                catalog.projectVariants.map((variant) => variant.variantId).includes(id)
+            ) {
                 basketAPI
-                    .update(id, quantity)
+                    .update(id, newQuantity)
                     .then((data) => {
-                        basket.variants = data.basketVariants;
+                        catalog.projectVariants = data.basketVariants;
                     })
                     .catch((error) =>
                         console.error(
@@ -51,59 +52,24 @@ const VariantItem = observer(
         };
 
         const handleCheckVariant = (event) => {
-            setIsChecked(event.target.checked); // срабатывает асинхронно, сразу использовать checked нельзя
             if (event.target.checked && quantity > 0) {
                 basketAPI
                     .append(id, quantity)
                     .then((data) => {
-                        basket.variants = data.basketVariants;
+                        catalog.projectVariants = data.basketVariants;
                     })
                     .catch((error) => console.error(`Append in basket error: ${error}`));
             } else if (!event.target.checked || quantity <= 0) {
                 basketAPI
                     .remove(id)
                     .then((data) => {
-                        basket.variants = data.basketVariants;
+                        catalog.projectVariants = data.basketVariants;
                     })
                     .catch((error) =>
                         console.error(`Remove from basket error: ${error}`)
                     );
             }
         };
-
-        useEffect(() => {
-            if (!quantityCalculatorName) return;
-            handleChangeQuantity(
-                quantityCalculators[quantityCalculatorName]({
-                    lendAreaInSqM: basket.lendAreaInSqM,
-                    testingSitesNumberPerFiveHa: basket.testingSitesNumberPerFiveHa,
-                    isObjectTypeLine: basket.isObjectTypeLine,
-                    trackLengthInM: basket.trackLengthInM,
-                })
-            );
-            // eslint-disable-next-line
-        }, [
-            basket.isObjectTypeLine,
-            basket.lendAreaInSqM,
-            basket.testingSitesNumberPerFiveHa,
-            basket.trackLengthInM,
-        ]);
-
-        useEffect(() => {
-            const basketVariant = basket.variants.find((item) => item.variantId === id);
-            if (basketVariant) {
-                setIsChecked(true);
-                setQuantity(basketVariant.quantity);
-            } else {
-                setIsChecked(false);
-            }
-            if (dynamicUnitPriceIdAndLevel) {
-                setDynamicUnitPrice(
-                    priceCalculator(basket.variants, dynamicUnitPriceIdAndLevel)
-                );
-            }
-            // eslint-disable-next-line
-        }, [basket.variants]);
 
         return (
             <>
@@ -112,6 +78,15 @@ const VariantItem = observer(
                         show={isShowModal}
                         setShow={setIsShowModal}
                         id={id}
+                        description={description}
+                        unit={unit}
+                        price={unitPrice}
+                        isObjectTypeLine={isObjectTypeLine}
+                        quantity={quantity}
+                        normDoc={normDoc}
+                        surveyName={surveyName}
+                        properties={properties}
+                        justification={justification}
                     />
                 )}
 
@@ -123,7 +98,7 @@ const VariantItem = observer(
                             id={id}
                             name={surveyId}
                             className="m-2 mt-0 mb-0"
-                            checked={isChecked}
+                            checked={checked}
                             onChange={handleCheckVariant}
                         />
                     </td>
@@ -132,17 +107,10 @@ const VariantItem = observer(
                         <label htmlFor={id}>{description}</label>
                     </td>
                     <td className="text-center align-middle">
-                        {/* <Button
-                            variant={isShowModal ? 'primary' : 'outline-primary'}
-                            className="pt-0 pb-1"
-                            onClick={() => setIsShowModal(true)}
-                        >
-                            {'>>'}
-                        </Button> */}
                         <Button
                             size="lg"
                             variant={isShowModal ? 'primary' : 'outline-primary'}
-                            className="pt-0 pb-0"
+                            className="pt-0 pb-1"
                             onClick={() => setIsShowModal(true)}
                         >
                             {'?'}
@@ -168,10 +136,7 @@ const VariantItem = observer(
                         className="text-center fw-bold align-middle"
                         style={{ width: '7em', whiteSpace: 'nowrap' }}
                     >
-                        {formatNumberWithSpaces(
-                            (dynamicUnitPrice || unitPrice) * quantity
-                        )}{' '}
-                        ₽
+                        {formatNumberWithSpaces(unitPrice * quantity)} ₽
                     </td>
                 </tr>
             </>

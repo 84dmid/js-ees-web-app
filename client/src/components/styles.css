@@ -1,0 +1,11 @@
+/* .remove-dropdown-arrow::after {
+    display: none !important;
+} */
+
+.dropdown-toggle::after {
+    content: none;
+}
+
+.modal-content {
+    min-height: 100%;
+}

@@ -1,116 +1,35 @@
 import React, { useContext, useState } from 'react';
-import { Form, Modal, Row, Col, Pagination, Button } from 'react-bootstrap';
-
-import regions from '../initData/regions';
-// import VariantAutoCalculator from './VariantAutoCalculator';
-import ObjectTypeSelectionMenu from './EESCalculatorComponents/ObjectTypeSelectionMenu';
-import ScenarioSelectionMenu from './EESCalculatorComponents/ScenarioSelectionMenu';
-import { observer } from 'mobx-react-lite';
-import { AppContext } from './AppContext';
-import { isEESCalculatorStoreParamsValid } from './EESCalculatorComponents/isEESCalculatorStoreParamsValid';
-import basketAPI from '../http/basketAPI';
-import { quantityCalculators } from '../calculators/quantityCalculators';
-import { convertEESCalculatorStoreParamsToQuantityCalculatorParams } from './EESCalculatorComponents/EESCalculatorConverters';
-import { fetchVariantsByIds } from '../http/catalogAPI';
+import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
-const initCalcParams = {
-    regionId: null,
-    regionName: null,
-};
+import styles from './styles.css';
+
+import ObjectTypeSelectionMenu from './EESCalculatorComponents/ObjectTypeSelectionMenu.js';
+import ScenarioSelectionMenu from './EESCalculatorComponents/ScenarioSelectionMenu.js';
+import { AppContext } from './AppContext.js';
+import basketAPI from '../http/basketAPI.js';
+import { quantityCalculators } from '../calculators/quantityCalculators.js';
+import { fetchVariantsByIds } from '../http/catalogAPI.js';
+import RegionSelectionMenu from './EESCalculatorComponents/RegionsSelectionMenu.js';
 
 const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
-    const { EESCalculator, basket } = useContext(AppContext);
+    const { EESCalculator, catalog } = useContext(AppContext);
     const [stepNumber, setStepNumber] = useState(1);
-    const [calcParams, setCalcParams] = useState(initCalcParams);
-    const [activeChar, setActiveChar] = useState('');
     const [isFetching, setIsFetching] = useState(false);
 
-    const handleChangeRegion = (id, name) => {
-        setCalcParams((prevParams) => ({
-            ...prevParams,
-            regionId: id,
-            regionName: name,
-        }));
-        setActiveChar(name.charAt().toUpperCase());
-    };
+    const calculateEESProject = (scenario) => {
+        if (!EESCalculator.isParamsValid) return;
+        setIsFetching(true);
 
-    const getRegionsListMenu = (regions) => {
-        const regionsList = [];
-        const productionRegions = regions.filter(
-            (region) => region.isProduction === true
-        );
-        const firstChars = new Set();
-        productionRegions.forEach((region) => {
-            firstChars.add(region.name.charAt().toUpperCase());
-        });
-        const sortedFirstChars = Array.from(firstChars).sort();
-        const paginationList = sortedFirstChars.map((char) => (
-            <Pagination.Item
-                key={char + 'pagination'}
-                active={calcParams.regionName?.charAt() === char}
-                onClick={() => setActiveChar(char)}
-            >
-                {char}
-            </Pagination.Item>
-        ));
-
-        regionsList.push(
-            <Pagination size="sm" key="pagination" className="d-flex flex-wrap ">
-                {paginationList}
-            </Pagination>
-        );
-        regionsList.push(
-            <p key="regionHeader" className="mb-3">
-                Выберите регион расположения участка изысканий:
-            </p>
-        );
-
-        (activeChar ? [activeChar] : sortedFirstChars).forEach((char) => {
-            const regionsGroup = [];
-            regionsGroup.push(
-                <p style={{ fontSize: '1.1em' }} className="mt-3 mb-2" key={char}>
-                    <b>{char}</b>
-                </p>
-            );
-            productionRegions
-                .filter((region) => region.name.charAt().toUpperCase() === char)
-                .forEach((region) => {
-                    regionsGroup.push(
-                        <Form.Check
-                            type="radio"
-                            key={region.id}
-                            id={region.id}
-                            label={region.name}
-                            checked={region.id === calcParams.regionId}
-                            onChange={() => handleChangeRegion(region.id, region.name)}
-                        />
-                    );
-                });
-            regionsList.push(<div key={char + 'regionGroup'}>{regionsGroup}</div>);
-        });
-        return regionsList;
-    };
-
-    const handleHide = () => {
-        setIsShow(false);
-        setCalcParams(initCalcParams);
-        setActiveChar('');
-        setStepNumber(1);
-    };
-
-    const calculateEESComposition = (scenario, params) => {
-        if (!isEESCalculatorStoreParamsValid(params)) return;
         const variantIds = scenario.variantIds;
         fetchVariantsByIds(variantIds)
             .then((data) => {
                 const variantsListForBasket = data.map((item) => {
                     const quantity = item.quantityCalculatorName
                         ? quantityCalculators[item.quantityCalculatorName](
-                              convertEESCalculatorStoreParamsToQuantityCalculatorParams(
-                                  params
-                              )
-                          )
+                              EESCalculator.quantityCalculatorParams
+                          ).number
                         : item.defaultQuantity || 1;
                     return { id: item.id, quantity };
                 });
@@ -119,7 +38,8 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
             .catch((error) => console.error(`Fetching variants error: ${error}`))
             .then((variantsListForBasket) => {
                 return basketAPI.appendVariantsList({
-                    ...convertEESCalculatorStoreParamsToQuantityCalculatorParams(params),
+                    ...EESCalculator.quantityCalculatorParams,
+                    regionId: EESCalculator.regionId,
                     variants: variantsListForBasket,
                 });
             })
@@ -127,80 +47,142 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                 console.error(`Appending in basket variants list error: ${error}`)
             )
             .then((data) => {
-                basket.isObjectTypeLine = data.isObjectTypeLine;
-                basket.lendAreaInSqM = data.lendAreaInSqM;
-                basket.trackWidthInM = data.trackWidthInM;
-                basket.trackLengthInM = data.trackLengthInM;
-                basket.testingSitesNumberPerFiveHa = data.testingSitesNumberPerFiveHa;
-                basket.variants = data.basketVariants;
+                catalog.projectParams = data;
+                catalog.projectVariants = data.basketVariants;
+                catalog.regionId = data.regionId;
             })
             .then(() => (EESCalculator.curScenario = ''))
             .then(() => setIsFetching(false));
     };
 
-    const getNextStep = async () => {
-        if (stepNumber === 2) {
-            setIsFetching(true);
-            calculateEESComposition([], EESCalculator.params);
-        } else if (stepNumber === 3) {
-            setIsFetching(true);
-            calculateEESComposition(EESCalculator.curScenario, EESCalculator.params);
-        }
-        console.log(isFetching);
-        if (!isFetching) {
-            setStepNumber((prevStep) => prevStep + 1);
-        }
-    };
-
-    const getButtons = () => {
-        if (stepNumber !== 4) {
-            return (
-                <>
-                    {stepNumber > 1 ? (
-                        <Button style={{ width: '7em' }} onClick={getPrevStep}>
-                            🠜 Назад{' '}
-                        </Button>
-                    ) : (
-                        <Button style={{ width: '7em' }} onClick={handleHide}>
-                            Выйти{' '}
-                        </Button>
-                    )}
-
-                    <Button
-                        style={{ width: '7em' }}
-                        disabled={
-                            (!calcParams.regionId && stepNumber === 1) ||
-                            (!isEESCalculatorStoreParamsValid(EESCalculator.params) &&
-                                stepNumber === 2)
-                        }
-                        onClick={getNextStep}
-                    >
-                        Вперёд 🠞
-                    </Button>
-                </>
-            );
-        } else {
-            return (
-                <Link to="/basket" className="btn btn-primary btn-lg">
-                    Перейти в проект изысканий
-                </Link>
-            );
-        }
+    const handleHide = () => {
+        setIsShow(false);
+        EESCalculator.params = catalog.projectParams;
+        EESCalculator.regionId = null;
+        setStepNumber(1);
     };
 
     const getPrevStep = () => {
         setStepNumber((prevStep) => prevStep - 1);
     };
 
+    const handleNextStep = () => {
+        if (stepNumber === 2) {
+            calculateEESProject([]);
+        } else if (stepNumber === 3) {
+            calculateEESProject(EESCalculator.curScenario);
+        }
+        if (!isFetching) {
+            setStepNumber((prevStep) => prevStep + 1);
+        }
+    };
+
+    const getContentByStepNumber = (stepNumber) => {
+        switch (stepNumber) {
+            case 1:
+                return <RegionSelectionMenu isBigMenu={true} />;
+            case 2:
+                return <ObjectTypeSelectionMenu defaultTestingSitesNumberPerFiveHa={2} />;
+            case 3:
+                return <ScenarioSelectionMenu />;
+            case 4:
+                return (
+                    <div style={{ fontSize: '1.2em' }}>
+                        <p>
+                            На основании результатов расчёта вы можете сформировать
+                            техническое задание и запрос коммерческого предложения (КП),
+                            запросить КП можно у представленных на сайте подрядчиков, либо
+                            получить ссылку на запрос КП и направить её в любую известную
+                            вам организацию.
+                        </p>
+                        <p>
+                            Мы рекомендуем запрашивать коммерческие предложения у
+                            подрядчиков, осуществляющих деятельность в регионе
+                            расположения участка. При необходимости, они смогут
+                            скорректировать состав работ с учётом требований местной
+                            экспертизы.
+                        </p>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const getButtonsByStepNumber = (stepNumber) => {
+        switch (stepNumber) {
+            case 1:
+                return (
+                    <>
+                        <Button style={{ width: '7em' }} onClick={handleHide}>
+                            Выйти{' '}
+                        </Button>
+                        <Button
+                            style={{ width: '7em' }}
+                            disabled={!EESCalculator.regionId && stepNumber === 1}
+                            onClick={handleNextStep}
+                        >
+                            Вперёд 🠞
+                        </Button>
+                    </>
+                );
+            case 2:
+                return (
+                    <>
+                        <Button style={{ width: '7em' }} onClick={getPrevStep}>
+                            🠜 Назад{' '}
+                        </Button>
+                        <Button
+                            style={{ width: '7em' }}
+                            disabled={!EESCalculator.isParamsValid}
+                            onClick={handleNextStep}
+                        >
+                            Вперёд 🠞
+                        </Button>
+                    </>
+                );
+            case 3:
+                return (
+                    <>
+                        <Button style={{ width: '7em' }} onClick={getPrevStep}>
+                            🠜 Назад{' '}
+                        </Button>
+                        <Button
+                            style={{ width: '7em' }}
+                            disabled={!EESCalculator.curScenario.id}
+                            onClick={handleNextStep}
+                        >
+                            Вперёд 🠞
+                        </Button>
+                    </>
+                );
+            case 4:
+                return (
+                    <Link
+                        to="/project"
+                        className="btn btn-primary btn-lg"
+                        onClick={() => {
+                            EESCalculator.clearParams();
+                            EESCalculator.regionId = null;
+                        }}
+                    >
+                        Перейти к результатам расчёта
+                    </Link>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <Modal
-            dialogClassName="modalHeight"
             show={isShow}
             onHide={handleHide}
             size="lg"
             fullscreen="sm-down"
             backdrop="static"
             keyboard={false}
+            scrollable={true}
         >
             <Modal.Header closeButton>
                 <Modal.Title>
@@ -211,43 +193,8 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                     )}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-                {stepNumber === 1 && getRegionsListMenu(regions)}
 
-                {stepNumber === 2 && (
-                    <ObjectTypeSelectionMenu defaultTestingSitesNumberPerFiveHa={2} />
-                )}
-
-                {stepNumber === 3 && <ScenarioSelectionMenu />}
-
-                {stepNumber === 4 && (
-                    <div>
-                        <p>
-                            Поздравляем, вы завершили расчёт! Если вы проектируете типовой
-                            объект, то полученный состав работ в большинстве случаев
-                            должен успешно пройти экспертизу. На основании результатов
-                            расчёта, на вкладке <Link>проект изысканий</Link>, вы можете
-                            сформировать подробный запрос на коммерческое предложение и
-                            направить его исполнителям, в том числе, не зарегистрированным
-                            на данном сайте.
-                        </p>
-                        <p>
-                            Документы, нормирующие состав изысканий, достаточно
-                            противоречивы, требования экспертов могут разниться от региона
-                            к региону, особенно это касается исследований грунтов.
-                            Вследствие этого, команда сайта настоятельно рекомендует
-                            запрашивать коммерческие предложения у подрядчиков, работающих
-                            в регионе расположения участка изысканий. Они, на основании
-                            своего опыта работы с местной экспертизой, при необходимости
-                            смогут скорректировать состав работ.
-                        </p>
-                        <p>
-                            Корректировать состав работ можно в{' '}
-                            <Link> конструкторе изысканий</Link>.
-                        </p>
-                    </div>
-                )}
-            </Modal.Body>
+            <Modal.Body>{getContentByStepNumber(stepNumber)}</Modal.Body>
 
             <Modal.Footer
                 className={
@@ -256,7 +203,7 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                         : 'd-flex justify-content-between'
                 }
             >
-                {getButtons()}
+                {getButtonsByStepNumber(stepNumber)}
             </Modal.Footer>
         </Modal>
     );

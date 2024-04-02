@@ -3,7 +3,6 @@ import { Form } from 'react-bootstrap';
 import { observer } from 'mobx-react-lite';
 
 import { AppContext } from '../AppContext.js';
-import { fetchScenario, fetchScenarios } from '../../http/scenarioAPI.js';
 
 const ScenarioSelectionMenu = observer(() => {
     const { EESCalculator } = useContext(AppContext);
@@ -13,12 +12,9 @@ const ScenarioSelectionMenu = observer(() => {
     }, []);
 
     const handleChangeScenario = (event) => {
-        const scenarioId = parseInt(event.target.id);
-        fetchScenario(scenarioId)
-            .then((data) => {
-                EESCalculator.curScenario = data;
-            })
-            .catch((error) => console.error(`Fetching scenario error: ${error}`));
+        EESCalculator.curScenario = EESCalculator.initScenarios.find(
+            (scenario) => scenario.id === parseInt(event.target.id)
+        );
     };
 
     const getScenariosRadioBoxList = (scenarios) => {
@@ -49,7 +45,7 @@ const ScenarioSelectionMenu = observer(() => {
         <div className={EESCalculator.params.isObjectTypeLine !== null ? '' : 'd-none'}>
             <Form.Group className={'mt-2 mb-2'}>
                 <p className="mb-1">Выберите сценарий использования участка:</p>
-                {getScenariosRadioBoxList(EESCalculator.scenarios)}
+                {getScenariosRadioBoxList(EESCalculator.curScenarios)}
             </Form.Group>
         </div>
     );

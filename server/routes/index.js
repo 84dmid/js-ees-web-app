@@ -10,6 +10,7 @@ import survey from './survey.js';
 import user from './user.js';
 import variant from './variant.js';
 import scenario from './scenario.js';
+import region from './region.js';
 
 const router = new express.Router();
 
@@ -23,5 +24,6 @@ router.use('/survey', survey);
 router.use('/user', user);
 router.use('/variant', variant);
 router.use('/scenario', scenario);
+router.use('/region', region);
 
 export default router;

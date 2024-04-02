@@ -1,125 +1,172 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { priceCalculator } from '../calculators/variantPriceHandler';
 
 class BasketStore {
-    _catalog = [];
+    _initCatalog = [];
+    _project = [];
     _isObjectTypeLine = null;
     _lendAreaInSqM = null;
     _trackLengthInM = null;
     _trackWidthInM = null;
     _testingSitesNumberPerFiveHa = null;
-    _variants = [];
+    _projectVariants = [];
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    get catalog() {
-        return this._catalog;
-    }
-    set catalog(catalog) {
-        this._catalog = catalog;
-    }
+    // get initCatalog() {
+    //     return this._initCatalog;
+    // }
 
-    get isObjectTypeLine() {
-        return this._isObjectTypeLine;
-    }
+    // get project() {
+    //     const basketVariantIds = new Set(
+    //         this._projectVariants.map((variant) => variant.variantId)
+    //     );
 
-    get lendAreaInSqM() {
-        return this._lendAreaInSqM;
-    }
+    //     const basketQuantities = {};
+    //     this._projectVariants.forEach(
+    //         (variant) => (basketQuantities[variant.variantId] = variant.quantity)
+    //     );
 
-    get trackLengthInM() {
-        return this._trackLengthInM;
-    }
+    //     return this._initCatalog
+    //         .map((category) => {
+    //             const subcategories = category.subcategories
+    //                 .map((subcategory) => {
+    //                     const surveys = subcategory.surveys
+    //                         .map((survey) => {
+    //                             const filteredVariants = survey.variants
+    //                                 .filter((variant) => basketVariantIds.has(variant.id))
+    //                                 .map((variant) => ({
+    //                                     ...variant,
+    //                                     quantity:
+    //                                         basketQuantities[variant.id] ||
+    //                                         variant.defaultQuantity,
+    //                                     price:
+    //                                         priceCalculator(
+    //                                             this._projectVariants,
+    //                                             variant.dynamicPriceIdAndLevel
+    //                                         ) || variant.price,
+    //                                 }));
+    //                             return filteredVariants.length > 0
+    //                                 ? { ...survey, variants: filteredVariants }
+    //                                 : null;
+    //                         })
+    //                         .filter(Boolean);
+    //                     return surveys.length > 0 ? { ...subcategory, surveys } : null;
+    //                 })
+    //                 .filter(Boolean);
+    //             return subcategories.length > 0 ? { ...category, subcategories } : null;
+    //         })
+    //         .filter(Boolean);
+    // }
 
-    get trackWidthInM() {
-        return this._trackWidthInM;
-    }
+    // get isObjectTypeLine() {
+    //     return this._isObjectTypeLine;
+    // }
 
-    get testingSitesNumberPerFiveHa() {
-        return this._testingSitesNumberPerFiveHa;
-    }
+    // get lendAreaInSqM() {
+    //     return this._lendAreaInSqM;
+    // }
 
-    get variants() {
-        return this._variants;
-    }
+    // get trackLengthInM() {
+    //     return this._trackLengthInM;
+    // }
 
-    get count() {
-        return this._variants.length;
-    }
+    // get trackWidthInM() {
+    //     return this._trackWidthInM;
+    // }
 
-    get sum() {
-        return this._variants.reduce((sum, item) => {
-            let price = item.price;
-            if (item.dynamicPriceIdAndLevel) {
-                price = priceCalculator(this._variants, item.dynamicPriceIdAndLevel);
-            }
-            return sum + price * item.quantity;
-        }, 0);
-    }
+    // get testingSitesNumberPerFiveHa() {
+    //     return this._testingSitesNumberPerFiveHa;
+    // }
 
-    set isObjectTypeLine(isObjectTypeLine) {
-        this._isObjectTypeLine = isObjectTypeLine;
-    }
+    // get variants() {
+    //     return this._projectVariants;
+    // }
 
-    set lendAreaInSqM(lendAreaInSqM) {
-        this._lendAreaInSqM = lendAreaInSqM;
-    }
+    // get count() {
+    //     return this._projectVariants.length;
+    // }
 
-    set trackLengthInM(trackLengthInM) {
-        this._trackLengthInM = trackLengthInM;
-    }
+    // get sum() {
+    //     return this._projectVariants.reduce((sum, item) => {
+    //         let price = item.price;
+    //         if (item.dynamicPriceIdAndLevel) {
+    //             price = priceCalculator(
+    //                 this._projectVariants,
+    //                 item.dynamicPriceIdAndLevel
+    //             );
+    //         }
+    //         return sum + price * item.quantity;
+    //     }, 0);
+    // }
 
-    set trackWidthInM(trackWidthInM) {
-        this._trackWidthInM = trackWidthInM;
-    }
+    // set initCatalog(initCatalog) {
+    //     this._initCatalog = initCatalog;
+    // }
 
-    set testingSitesNumberPerFiveHa(testingSitesNumberPerFiveHa) {
-        this._testingSitesNumberPerFiveHa = testingSitesNumberPerFiveHa;
-    }
+    // set isObjectTypeLine(isObjectTypeLine) {
+    //     this._isObjectTypeLine = isObjectTypeLine;
+    // }
 
-    set variants(variants) {
-        this._variants = variants;
-    }
+    // set lendAreaInSqM(lendAreaInSqM) {
+    //     this._lendAreaInSqM = lendAreaInSqM;
+    // }
 
-    getVariantById(id) {
-        const variant = this._variants.find((item) => +item.variantId === +id);
-        if (variant.dynamicPriceIdAndLevel) {
-            variant.price = priceCalculator(
-                this._variants,
-                variant.dynamicPriceIdAndLevel
-            );
-        }
-        variant.quantityPrice = variant.price * variant.quantity;
-        return variant;
-    }
+    // set trackLengthInM(trackLengthInM) {
+    //     this._trackLengthInM = trackLengthInM;
+    // }
 
-    getObjectTypeName() {
-        if (this._isObjectTypeLine === null) {
-            return 'не выбран';
-        } else if (this.isObjectTypeLine === true) {
-            return 'линейный';
-        } else {
-            return 'нелинейный';
-        }
-    }
+    // set trackWidthInM(trackWidthInM) {
+    //     this._trackWidthInM = trackWidthInM;
+    // }
 
-    getTrackAreaInSqM() {
-        if (this._isObjectTypeLine === null || !this._isObjectTypeLine) {
-            return null;
-        } else {
-            return this._lendAreaInSqM;
-        }
-    }
+    // set testingSitesNumberPerFiveHa(testingSitesNumberPerFiveHa) {
+    //     this._testingSitesNumberPerFiveHa = testingSitesNumberPerFiveHa;
+    // }
 
-    getPlotAreaInSqM() {
-        if (this._isObjectTypeLine === null || this._isObjectTypeLine) {
-            return null;
-        } else {
-            return this._lendAreaInSqM;
-        }
-    }
+    // set variants(variants) {
+    //     this._projectVariants = variants;
+    // }
+
+    // getVariantById(id) {
+    //     const variant = this._projectVariants.find((item) => +item.variantId === +id);
+    //     if (variant.dynamicPriceIdAndLevel) {
+    //         variant.price = priceCalculator(
+    //             this._projectVariants,
+    //             variant.dynamicPriceIdAndLevel
+    //         );
+    //     }
+    //     variant.quantityPrice = variant.price * variant.quantity;
+    //     return variant;
+    // }
+
+    // getObjectTypeName() {
+    //     if (this._isObjectTypeLine === null) {
+    //         return 'не выбран';
+    //     } else if (this.isObjectTypeLine === true) {
+    //         return 'линейный';
+    //     } else {
+    //         return 'нелинейный';
+    //     }
+    // }
+
+    // getTrackAreaInSqM() {
+    //     if (this._isObjectTypeLine === null || !this._isObjectTypeLine) {
+    //         return null;
+    //     } else {
+    //         return this._lendAreaInSqM;
+    //     }
+    // }
+
+    // getPlotAreaInSqM() {
+    //     if (this._isObjectTypeLine === null || this._isObjectTypeLine) {
+    //         return null;
+    //     } else {
+    //         return this._lendAreaInSqM;
+    //     }
+    // }
 }
 
 export default BasketStore;

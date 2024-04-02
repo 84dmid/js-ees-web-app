@@ -16,6 +16,32 @@ class Basket {
         }
     }
 
+    async createLink(req, res, next) {
+        try {
+            let link = await BasketModel.createLink(parseInt(req.signedCookies.basketId));
+            res.json(link);
+        } catch (error) {
+            next(
+                AppError.badRequest(
+                    `Ошибка при создании ссылки на проект: ${error.message}`
+                )
+            );
+        }
+    }
+
+    async getLink(req, res, next) {
+        try {
+            let link = await BasketModel.getLink(req.params.id);
+            res.json(link);
+        } catch (error) {
+            next(
+                AppError.badRequest(
+                    `Ошибка при получении ссылки на проект: ${error.message}`
+                )
+            );
+        }
+    }
+
     async updateProjectParams(req, res, next) {
         try {
             let basketId;
@@ -23,13 +49,13 @@ class Basket {
                 basketId = parseInt(req.signedCookies.basketId);
             }
             const projectParams = req.body;
-            const basket = await BasketModel.updateProjectParams(basketId, projectParams);
+            const basket = await BasketModel.updateParams(basketId, projectParams);
             res.cookie('basketId', basket.id, { maxAge, signed });
             res.json(basket);
         } catch (error) {
             next(
                 AppError.badRequest(
-                    `Ошибка при обновлении параметров проекта в корзине: ${error.message}`
+                    `Ошибка при обновлении параметров проекта: ${error.message}`
                 )
             );
         }

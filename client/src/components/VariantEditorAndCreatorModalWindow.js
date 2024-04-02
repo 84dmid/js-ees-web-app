@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import { Modal, Button, ButtonGroup, Form } from 'react-bootstrap';
+import {
+    Modal,
+    Button,
+    ButtonGroup,
+    Form,
+    FloatingLabel,
+    Row,
+    Col,
+} from 'react-bootstrap';
 
 import {
     fetchVariant,
@@ -79,6 +87,7 @@ const VariantEditorAndCreatorModalWindow = ({
         if (isEditor) {
             fetchVariant(id || variant.id)
                 .then((data) => {
+                    console.log(data);
                     setVariant(data);
                 })
                 .catch((error) => console.error(`Variant fetching error: ${error}`))
@@ -112,8 +121,8 @@ const VariantEditorAndCreatorModalWindow = ({
     };
 
     useEffect(() => {
-        if (variant.dynamicPriceIdAndLevel) {
-            const levelName = variant.dynamicPriceIdAndLevel.split('.')[0];
+        if (variant.priceAndQuantityCalcData) {
+            const levelName = variant.priceAndQuantityCalcData.levelName;
 
             getVariantsListByLevelName(levelName)
                 .then((data) => {
@@ -123,33 +132,64 @@ const VariantEditorAndCreatorModalWindow = ({
                     console.error(`${levelName}(-s) fetching error: ${error}`)
                 );
         }
-    }, [variant.dynamicPriceIdAndLevel]);
+    }, [variant.priceAndQuantityCalcData]);
 
     if (fetching) {
         return null;
     }
 
+    // const handleChangeLevelNameForDynamicPriceCalc = (event) => {
+    //     if (event.target.id !== 'notSelected') {
+    //         setVariant((prevVariant) => ({
+    //             ...prevVariant,
+    //             dynamicPriceIdAndLevel: event.target.id + '.',
+    //         }));
+    //     } else {
+    //         setVariant((prevVariant) => ({
+    //             ...prevVariant,
+    //             dynamicPriceIdAndLevel: null,
+    //         }));
+    //         setVariantsListForDynamicPriceCalc('');
+    //     }
+    // };
     const handleChangeLevelNameForDynamicPriceCalc = (event) => {
         if (event.target.id !== 'notSelected') {
+            console.log(event.target.id);
             setVariant((prevVariant) => ({
                 ...prevVariant,
-                dynamicPriceIdAndLevel: event.target.id + '.',
+                priceAndQuantityCalcData: {
+                    levelName: event.target.id,
+                },
             }));
         } else {
             setVariant((prevVariant) => ({
                 ...prevVariant,
-                dynamicPriceIdAndLevel: null,
+                priceAndQuantityCalcData: null,
             }));
             setVariantsListForDynamicPriceCalc('');
         }
     };
 
     const handleChangeLevelIdForDynamicPriceCalc = (event) => {
-        if (variant.dynamicPriceIdAndLevel === null) return;
+        if (variant.priceAndQuantityCalcData === null) return;
         setVariant((prevVariant) => ({
             ...prevVariant,
-            dynamicPriceIdAndLevel:
-                prevVariant.dynamicPriceIdAndLevel + event.target.value,
+            priceAndQuantityCalcData: {
+                levelName: prevVariant.priceAndQuantityCalcData.levelName,
+                levelId: event.target.value,
+            },
+        }));
+    };
+
+    const handleChangeLevelPriceShareForDynamicPriceCalc = (event) => {
+        if (variant.priceAndQuantityCalcData === null) return;
+        setVariant((prevVariant) => ({
+            ...prevVariant,
+            priceAndQuantityCalcData: {
+                levelName: prevVariant.priceAndQuantityCalcData.levelName,
+                levelId: prevVariant.priceAndQuantityCalcData.levelId,
+                priceShare: event.target.value,
+            },
         }));
     };
 
@@ -349,78 +389,69 @@ const VariantEditorAndCreatorModalWindow = ({
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label htmlFor="price">
-                            Цена единицы измерения <span className="text-danger">*</span>
-                        </Form.Label>
-                        <Form.Control
-                            disabled={!isEditing}
-                            id="price"
-                            type="number"
-                            onChange={(e) => handleFieldChange('price', e.target.value)}
-                            value={variant.price || ''}
-                            isValid={valid.price === true}
-                            isInvalid={valid.price === false}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-2 mt-3">
+                    <Form.Group className="mb-2 mt-3 border rounded">
                         <Form.Label htmlFor="dataForDynamicPriceCalc">
-                            Данные для динамического определения цены единицы измерения
+                            Данные для динамического определения цены единицы измерения и
+                            дефолтного значения количества
                         </Form.Label>
-                        <Form.Group>
-                            <Form.Check
-                                disabled={!isEditing}
-                                inline
-                                label="Не выбрано"
-                                id="notSelected"
-                                name="levelName"
-                                type="checkbox"
-                                checked={variant.dynamicPriceIdAndLevel === null}
-                                onChange={handleChangeLevelNameForDynamicPriceCalc}
-                            />
-                            <Form.Check
-                                disabled={!isEditing}
-                                inline
-                                label="Категория"
-                                id="category"
-                                name="levelName"
-                                type="checkbox"
-                                checked={
-                                    variant.dynamicPriceIdAndLevel !== null &&
-                                    variant.dynamicPriceIdAndLevel.split('.')[0] ===
-                                        'category'
-                                }
-                                onChange={handleChangeLevelNameForDynamicPriceCalc}
-                            />
-                            <Form.Check
-                                disabled={!isEditing}
-                                inline
-                                label="Подкатегория"
-                                id="subcategory"
-                                name="levelName"
-                                type="checkbox"
-                                checked={
-                                    variant.dynamicPriceIdAndLevel !== null &&
-                                    variant.dynamicPriceIdAndLevel.split('.')[0] ===
-                                        'subcategory'
-                                }
-                                onChange={handleChangeLevelNameForDynamicPriceCalc}
-                            />
-                            <Form.Check
-                                disabled={!isEditing}
-                                inline
-                                label="Исследование"
-                                id="survey"
-                                name="levelName"
-                                type="checkbox"
-                                checked={
-                                    variant.dynamicPriceIdAndLevel !== null &&
-                                    variant.dynamicPriceIdAndLevel.split('.')[0] ===
-                                        'survey'
-                                }
-                                onChange={handleChangeLevelNameForDynamicPriceCalc}
-                            />
+                        <Form.Group as={Row} className="mb-2">
+                            <Col>
+                                <Form.Check
+                                    disabled={!isEditing}
+                                    inline
+                                    label="Не выбрано"
+                                    id="notSelected"
+                                    name="levelName"
+                                    type="checkbox"
+                                    checked={variant.priceAndQuantityCalcData === null}
+                                    onChange={handleChangeLevelNameForDynamicPriceCalc}
+                                />
+                            </Col>
+                            <Col>
+                                <Form.Check
+                                    disabled={!isEditing}
+                                    label="Категория"
+                                    id="category"
+                                    name="levelName"
+                                    type="checkbox"
+                                    checked={
+                                        variant.priceAndQuantityCalcData !== null &&
+                                        variant.priceAndQuantityCalcData.levelName ===
+                                            'category'
+                                    }
+                                    onChange={handleChangeLevelNameForDynamicPriceCalc}
+                                />
+                            </Col>
+                            <Col>
+                                <Form.Check
+                                    disabled={!isEditing}
+                                    label="Подкатегория"
+                                    id="subcategory"
+                                    name="levelName"
+                                    type="checkbox"
+                                    checked={
+                                        variant.priceAndQuantityCalcData !== null &&
+                                        variant.priceAndQuantityCalcData.levelName ===
+                                            'subcategory'
+                                    }
+                                    onChange={handleChangeLevelNameForDynamicPriceCalc}
+                                />
+                            </Col>
+                            <Col>
+                                <Form.Check
+                                    disabled={!isEditing}
+                                    label="Исследование"
+                                    id="survey"
+                                    name="levelName"
+                                    type="checkbox"
+                                    checked={
+                                        variant.priceAndQuantityCalcData !== null &&
+                                        variant.priceAndQuantityCalcData.levelName ===
+                                            'survey'
+                                    }
+                                    onChange={handleChangeLevelNameForDynamicPriceCalc}
+                                />
+                            </Col>
                         </Form.Group>
 
                         <Form.Select
@@ -428,8 +459,8 @@ const VariantEditorAndCreatorModalWindow = ({
                             id="dataForDynamicPriceCalc"
                             onChange={handleChangeLevelIdForDynamicPriceCalc}
                             value={
-                                (variant.dynamicPriceIdAndLevel !== null &&
-                                    variant.dynamicPriceIdAndLevel.split('.')[1]) ||
+                                (variant.priceAndQuantityCalcData !== null &&
+                                    variant.priceAndQuantityCalcData.levelId) ||
                                 ''
                             }
                         >
@@ -438,6 +469,28 @@ const VariantEditorAndCreatorModalWindow = ({
                             </option>
                             {variantsListForDynamicPriceCalc}
                         </Form.Select>
+
+                        <Form.Group className="mt-2" as={Row}>
+                            <Col>
+                                <Form.Label htmlFor="priceShare">
+                                    Доля от стоимости установленного уровня:
+                                </Form.Label>
+                            </Col>
+                            <Col>
+                                <Form.Control
+                                    disabled={!isEditing}
+                                    id="priceShare"
+                                    size="sm"
+                                    type="number"
+                                    value={
+                                        variant.priceAndQuantityCalcData.priceShare || ''
+                                    }
+                                    onChange={
+                                        handleChangeLevelPriceShareForDynamicPriceCalc
+                                    }
+                                />
+                            </Col>
+                        </Form.Group>
                     </Form.Group>
 
                     <Form.Group className="mb-2">

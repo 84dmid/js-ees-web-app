@@ -1,46 +1,47 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Form } from 'react-bootstrap';
 
 import { AppContext } from './AppContext.js';
 
 const CheckedVariantsFilter = observer(() => {
-    const { catalog, basket } = useContext(AppContext);
+    const { catalog } = useContext(AppContext);
 
-    const setSurveyFilter = (event) => {
-        if (event.target.checked) {
-            if (basket.variants.length === 0) return;
-            catalog.surveyFilter = basket.variants.map((item) => {
-                return item.surveyId;
-            });
-        } else {
-            catalog.surveyFilter = [];
-        }
-    };
-
-    const setVariantFilter = (event) => {
-        if (event.target.checked) {
-            catalog.variantFilter = basket.variants.map((item) => item.variantId);
-        } else {
-            catalog.variantFilter = [];
-        }
-    };
+    useEffect(() => {
+        catalog.showAllCatalog = true;
+    }, []);
 
     return (
         <Form.Group className="mb-3">
             {/* <b>Исследования</b> */}
             <Form.Check
-                type="checkbox"
-                id="checkedSurveyFilter"
-                onChange={setSurveyFilter}
-                checked={catalog.surveyFilter.length}
-                label="Показать отмеченные виды исследований со всеми вариантами"
+                name="surveyFilter"
+                type="radio"
+                id="showAllCatalog"
+                onChange={() => {
+                    catalog.showAllCatalog = true;
+                }}
+                checked={catalog.showAllCatalog}
+                label="Показать весь каталог"
             />
             <Form.Check
-                type="checkbox"
-                id="checkedVariantsFilter"
-                onChange={setVariantFilter}
-                checked={catalog.variantFilter.length}
+                name="surveyFilter"
+                type="radio"
+                id="showOnlyCheckedSurveys"
+                onChange={() => {
+                    catalog.showOnlyCheckedSurveys = true;
+                }}
+                checked={catalog.showOnlyCheckedSurveys}
+                label="Показать только отмеченные виды исследований"
+            />
+            <Form.Check
+                name="surveyFilter"
+                type="radio"
+                id="showOnlyCheckedVariants"
+                onChange={() => {
+                    catalog.showOnlyCheckedVariants = true;
+                }}
+                checked={catalog.showOnlyCheckedVariants}
                 label="Показать только отмеченные варианты"
             />
         </Form.Group>

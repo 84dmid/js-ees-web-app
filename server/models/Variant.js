@@ -50,8 +50,9 @@ class Variant {
                 'isObjectTypeLine',
                 'properties',
                 'isProduction',
-                // 'handlerId',
+                'regionId',
                 'dynamicPriceIdAndLevel',
+                'priceAndQuantityCalcData',
             ],
             include,
         });

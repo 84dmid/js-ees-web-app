@@ -6,10 +6,10 @@ import FilterBar from '../components/FilterBar.js';
 import Catalog from '../components/Catalog.js';
 import VariantAutoCalculator from '../components/VariantAutoCalculator.js';
 
-const SurveyCatalog = observer(() => {
+const Constructor = observer(() => {
     return (
         <Container fluid>
-            <Row className="mt-2">
+            <Row>
                 <Col lg={3} className="mb-3 bg-body-tertiary">
                     <VariantAutoCalculator />
                     <FilterBar />
@@ -22,4 +22,4 @@ const SurveyCatalog = observer(() => {
     );
 });
 
-export default SurveyCatalog;
+export default Constructor;

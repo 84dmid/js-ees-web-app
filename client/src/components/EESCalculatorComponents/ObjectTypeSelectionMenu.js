@@ -3,8 +3,6 @@ import { Form, FloatingLabel, Button } from 'react-bootstrap';
 import { observer } from 'mobx-react-lite';
 
 import { AppContext } from '../AppContext.js';
-import { convertBasketParamsToEESCalculatorStoreParams } from './EESCalculatorConverters.js';
-import { fetchScenarios } from '../../http/scenarioAPI.js';
 
 function formatNumberWithSpaces(number, maximumFractionDigits) {
     return number.toLocaleString('ru-RU', {
@@ -30,54 +28,35 @@ const isValid = {
 
 const ObjectTypeSelectionMenu = observer(
     ({ defaultTestingSitesNumberPerFiveHa = undefined }) => {
-        const { basket, EESCalculator } = useContext(AppContext);
+        const { catalog, EESCalculator } = useContext(AppContext);
 
         useEffect(() => {
-            if (defaultTestingSitesNumberPerFiveHa) {
-                const newBasket = {
-                    ...convertBasketParamsToEESCalculatorStoreParams(basket),
-                    testingSitesNumberPerFiveHa: defaultTestingSitesNumberPerFiveHa,
-                };
-                EESCalculator.params = newBasket;
-            } else {
-                EESCalculator.params =
-                    convertBasketParamsToEESCalculatorStoreParams(basket);
-            }
-            if (EESCalculator.params.isObjectTypeLine !== null) {
-                fetchScenarios({
-                    isObjectTypeLine: EESCalculator.params.isObjectTypeLine,
-                    isProduction: true,
-                })
-                    .then((data) => {
-                        EESCalculator.scenarios = data;
-                    })
-                    .catch((error) =>
-                        console.error(`Fetching scenarios error: ${error}`)
-                    );
-            }
+            if (catalog.isObjectTypeLine === null) return;
+            EESCalculator.isObjectTypeLine = catalog.isObjectTypeLine;
+            EESCalculator.params = catalog.projectParams;
         }, []);
+
+        const handleChangeObjectType = (isObjectTypeLine) => {
+            if (isObjectTypeLine === catalog.isObjectTypeLine) {
+                EESCalculator.params = catalog.projectParams;
+            } else {
+                EESCalculator.clearParams();
+                EESCalculator.isObjectTypeLine = isObjectTypeLine;
+            }
+            if (defaultTestingSitesNumberPerFiveHa && isObjectTypeLine === false) {
+                EESCalculator.testingSitesNumberPerFiveHa =
+                    defaultTestingSitesNumberPerFiveHa;
+            }
+            EESCalculator.curScenario = '';
+        };
 
         const handleInputChange = (event, field) => {
             const value = +event.target.value;
             if (!isValid[field](value)) return;
-            if (field === 'trackLengthInM') {
-                EESCalculator.params = {
-                    ...EESCalculator.params,
-                    trackLengthInM: value,
-                    trackAreaInSqM: value * EESCalculator.params.trackWidthInM,
-                };
-            } else if (field === 'trackWidthInM') {
-                EESCalculator.params = {
-                    ...EESCalculator.params,
-                    trackWidthInM: value,
-                    trackAreaInSqM: value * EESCalculator.params.trackLengthInM,
-                };
-            } else {
-                EESCalculator.params = {
-                    ...EESCalculator.params,
-                    [field]: value || null,
-                };
-            }
+            EESCalculator.params = {
+                ...EESCalculator.params,
+                [field]: value || null,
+            };
         };
 
         const handleKeyDown = (event) => {
@@ -89,38 +68,11 @@ const ObjectTypeSelectionMenu = observer(
             }
         };
 
-        const handleChangeObjectType = (isObjectTypeLine) => {
-            if (defaultTestingSitesNumberPerFiveHa) {
-                const newBasket = {
-                    ...convertBasketParamsToEESCalculatorStoreParams(basket),
-                    testingSitesNumberPerFiveHa: defaultTestingSitesNumberPerFiveHa,
-                };
-                EESCalculator.params = {
-                    ...newBasket,
-                    isObjectTypeLine,
-                };
-            } else {
-                EESCalculator.params = {
-                    ...convertBasketParamsToEESCalculatorStoreParams(basket),
-                    isObjectTypeLine,
-                };
-            }
-            EESCalculator.curScenario = '';
-            fetchScenarios({
-                isObjectTypeLine: isObjectTypeLine,
-                isProduction: true,
-            })
-                .then((data) => {
-                    EESCalculator.scenarios = data;
-                })
-                .catch((error) => console.error(`Fetching scenarios error: ${error}`));
-        };
-
         return (
             <>
                 <Form.Group className={'mt-3 mb-2'}>
                     <p className="mb-1">
-                        Выберите тип объекта, планируемый к строительству на участке:
+                        Выберите тип объекта, планируемого к строительству на участке:
                     </p>
                     <div>
                         <Form.Check
@@ -170,13 +122,10 @@ const ObjectTypeSelectionMenu = observer(
                         <FloatingLabel
                             controlId="plotAreaInSqM"
                             label={
-                                // EESCalculator.params.plotAreaInSqM
-                                //     ?
                                 formatNumberWithSpaces(
                                     EESCalculator.params.plotAreaInSqM / 10000,
                                     4
                                 ) + ' га'
-                                // : 0 + ' га'
                             }
                         >
                             <Form.Control
@@ -251,13 +200,10 @@ const ObjectTypeSelectionMenu = observer(
                         <FloatingLabel
                             controlId="trackLengthInM"
                             label={
-                                // EESCalculator.params.trackLengthInM
-                                //     ?
                                 formatNumberWithSpaces(
                                     EESCalculator.params.trackLengthInM / 1000,
                                     3
                                 ) + ' км'
-                                // : 0 + ' км'
                             }
                         >
                             <Form.Control
@@ -321,8 +267,6 @@ const ObjectTypeSelectionMenu = observer(
                             />
                         </FloatingLabel>
                     </Form.Group>
-
-                    <Form.Text></Form.Text>
                 </div>
             </>
         );

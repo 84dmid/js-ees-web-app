@@ -40,6 +40,7 @@ class Scenario {
         if (isProduction !== undefined) where.isProduction = isProduction;
         const scenarios = await ScenarioMapping.findAll({
             order: ['order', 'isObjectTypeLine'],
+            include: [{ model: ScenarioVariantMapping, attributes: ['variantId'] }],
             where,
         });
         return scenarios;

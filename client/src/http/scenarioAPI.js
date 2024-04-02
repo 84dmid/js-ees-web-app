@@ -7,7 +7,12 @@ export const fetchScenarios = async (queryParams) => {
         params = { isObjectTypeLine, isProduction };
     }
     const { data } = await guestInstance.get('scenario/get_all', { params });
-    return data;
+
+    const prettierData = data.map((scenario) => {
+        const variantIds = scenario.scenarioVariants.map((item) => item.variantId);
+        return { ...scenario, variantIds: variantIds };
+    }); // написать приттер на сервере, убрать от сюда
+    return prettierData;
 };
 
 export const fetchScenario = async (id) => {

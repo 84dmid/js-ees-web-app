@@ -12,6 +12,9 @@ const AdminNavBar = () => {
                 <NavLink to="/admin/edit/surveyScenarios" className="nav-link">
                     Редактор сценариев
                 </NavLink>
+                <NavLink to="/admin/edit/region" className="nav-link">
+                    Редактор регионов
+                </NavLink>
                 <NavLink to="/admin/statistics" className="nav-link ">
                     Статистика
                 </NavLink>

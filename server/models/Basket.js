@@ -5,6 +5,8 @@ import { BasketVariant as BasketVariantMapping } from './mapping.js';
 import { Survey as SurveyMapping } from './mapping.js';
 import { Subcategory as SubcategoryMapping } from './mapping.js';
 import { Category as CategoryMapping } from './mapping.js';
+import { ProjectLink as ProjectLinkMapping } from './mapping.js';
+import { Region as RegionMapping } from './mapping.js';
 
 const makePrettier = (basket) => {
     if (!basket.basketVariants.length) return basket;
@@ -15,6 +17,7 @@ const makePrettier = (basket) => {
             quantity: item.quantity,
             price: item.variant.price,
             dynamicPriceIdAndLevel: item.variant.dynamicPriceIdAndLevel,
+            priceAndQuantityCalcData: item.variant.priceAndQuantityCalcData,
             surveyId: item.variant.survey.id,
             subcategoryId: item.variant.survey.subcategory.id,
             categoryId: item.variant.survey.subcategory.category.id,
@@ -28,34 +31,39 @@ const makePrettier = (basket) => {
         trackWidthInM: basket.trackWidthInM,
         trackLengthInM: basket.trackLengthInM,
         testingSitesNumberPerFiveHa: basket.testingSitesNumberPerFiveHa,
+        regionId: basket.regionId,
         basketVariants: basketVariants,
+
+        generalData: basket.generalData,
+        customerData: basket.customerData,
+        contractorData: basket.contractorData,
     };
 };
 
-class Basket {
-    async _getOrCreateBasket(basketId) {
-        const include = [
+const include = [
+    {
+        model: BasketVariantMapping,
+        attributes: ['variantId', 'quantity'],
+        include: [
             {
-                model: BasketVariantMapping,
-                attributes: ['variantId', 'quantity'],
+                model: VariantMapping,
+                attributes: [
+                    'price',
+                    'dynamicPriceIdAndLevel',
+                    'priceAndQuantityCalcData',
+                ],
                 include: [
                     {
-                        model: VariantMapping,
-                        attributes: ['price', 'dynamicPriceIdAndLevel'],
+                        model: SurveyMapping,
+                        attributes: ['id'],
                         include: [
                             {
-                                model: SurveyMapping,
+                                model: SubcategoryMapping,
                                 attributes: ['id'],
                                 include: [
                                     {
-                                        model: SubcategoryMapping,
+                                        model: CategoryMapping,
                                         attributes: ['id'],
-                                        include: [
-                                            {
-                                                model: CategoryMapping,
-                                                attributes: ['id'],
-                                            },
-                                        ],
                                     },
                                 ],
                             },
@@ -63,27 +71,33 @@ class Basket {
                     },
                 ],
             },
-        ];
+        ],
+    },
+];
 
-        const attributes = [
-            'id',
-            'isObjectTypeLine',
-            'lendAreaInSqM',
-            'trackWidthInM',
-            'trackLengthInM',
-            'testingSitesNumberPerFiveHa',
-        ];
+class Basket {
+    async _getOrCreateBasket(basketId) {
+        include;
+        // const attributes = [
+        //     'id',
+        //     'isObjectTypeLine',
+        //     'lendAreaInSqM',
+        //     'trackWidthInM',
+        //     'trackLengthInM',
+        //     'testingSitesNumberPerFiveHa',
+        //     'regionId',
+        // ];
         let basket;
         if (basketId) {
             basket = await BasketMapping.findByPk(basketId, {
-                attributes,
+                // attributes,
                 include,
             });
         }
         if (!basket) {
             basket = await BasketMapping.create();
             basket = await BasketMapping.findByPk(basket.id, {
-                attributes,
+                // attributes,
                 include,
             });
         }
@@ -95,9 +109,33 @@ class Basket {
         return makePrettier(basket);
     }
 
-    async updateProjectParams(basketId, projectParams) {
+    async createLink(basketId, linkRole) {
+        const basket = await BasketMapping.findByPk(basketId, {
+            include,
+        });
+        if (!basket || basket.basketVariants.length === 0) {
+            throw new Error('В проекте отсутствуют исследования');
+        }
+        const link = await ProjectLinkMapping.create({
+            projectData: makePrettier(basket),
+            linkRole,
+        });
+        return link;
+    }
+
+    async getLink(id) {
+        const link = await ProjectLinkMapping.findByPk(id);
+        if (!link) {
+            throw new Error(
+                'Ссылка на расчёт состава изысканий не найдена в базе данных'
+            );
+        }
+        return link;
+    }
+
+    async updateParams(basketId, data) {
         let basket = await this._getOrCreateBasket(basketId);
-        await basket.update(projectParams);
+        basket.update(data);
         return makePrettier(basket);
     }
 
@@ -144,40 +182,6 @@ class Basket {
         return makePrettier(basket);
     }
 
-    // async appendVariantsList(basketId, data) {
-    //     const {
-    //         isObjectTypeLine,
-    //         lendAreaInSqM,
-    //         trackLengthInM,
-    //         trackWidthInM,
-    //         testingSitesNumberPerFiveHa,
-    //     } = data;
-    //     let basket = await this._getOrCreateBasket(basketId);
-    //     if (basket.basketVariants.length) {
-    //         await BasketVariantMapping.destroy({
-    //             where: { basketId: basket.id },
-    //         });
-    //     }
-    //     const variantsToCreate = data.variants.map((item) => {
-    //         // желательно подумать над проверкой получения нескольких вариантов одного исследования
-    //         return {
-    //             variantId: item.id,
-    //             quantity: item.quantity,
-    //             basketId: basket.id,
-    //         };
-    //     });
-    //     await BasketVariantMapping.bulkCreate(variantsToCreate);
-    //     await basket.update({
-    //         isObjectTypeLine,
-    //         lendAreaInSqM,
-    //         trackLengthInM,
-    //         trackWidthInM,
-    //         testingSitesNumberPerFiveHa,
-    //     });
-    //     await basket.reload();
-    //     return makePrettier(basket);
-    // }
-
     async appendVariantsList(basketId, data) {
         const {
             isObjectTypeLine,
@@ -185,6 +189,7 @@ class Basket {
             trackLengthInM,
             trackWidthInM,
             testingSitesNumberPerFiveHa,
+            regionId,
             variants = null,
         } = data;
 
@@ -216,6 +221,7 @@ class Basket {
                     trackLengthInM,
                     trackWidthInM,
                     testingSitesNumberPerFiveHa,
+                    regionId,
                 },
                 { transaction }
             );
@@ -269,6 +275,7 @@ class Basket {
             trackLengthInM: null,
             trackWidthInM: null,
             testingSitesNumberPerFiveHa: null,
+            regionId: null,
         });
         if (basket.basketVariants.length) {
             await BasketVariantMapping.destroy({

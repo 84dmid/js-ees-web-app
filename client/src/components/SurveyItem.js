@@ -1,29 +1,16 @@
 import React from 'react';
 import VariantItem from './VariantItem.js';
-import CatalogSubheadingsForObjectTypes from './CatalogSubheadingsForObjectTypes.js';
 import CatalogSubheadings from './CatalogSubheadings.js';
 
 const SurveyItem = ({ id, name, variants }) => {
     const variantsList = [];
-
-    let curObjectType;
     variants.forEach((variant) => {
-        if (variant.isObjectTypeLine !== curObjectType) {
-            curObjectType = variant.isObjectTypeLine;
-            variantsList.push(
-                <CatalogSubheadingsForObjectTypes
-                    key={variant.id + 'objectTypeTextTableRow'}
-                    isEditor={false}
-                    isObjectTypeLine={curObjectType}
-                />
-            );
-        }
-
         variantsList.push(
             <VariantItem
                 key={variant.id + 'variant'}
                 id={variant.id}
                 surveyId={id}
+                surveyName={name}
                 description={variant.description}
                 unit={variant.unit}
                 defaultQuantity={variant.defaultQuantity}
@@ -31,6 +18,11 @@ const SurveyItem = ({ id, name, variants }) => {
                 isObjectTypeLine={variant.isObjectTypeLine}
                 quantityCalculatorName={variant.quantityCalculatorName}
                 dynamicUnitPriceIdAndLevel={variant.dynamicPriceIdAndLevel}
+                quantity={variant.quantity}
+                checked={variant.checked}
+                normDoc={variant.normDoc}
+                properties={variant.properties}
+                justification={variant.justification}
             />
         );
     });
@@ -43,7 +35,6 @@ const SurveyItem = ({ id, name, variants }) => {
                 </td>
             </tr>
             <CatalogSubheadings />
-
             {variantsList}
         </>
     );

@@ -1,37 +1,17 @@
-import { observer } from 'mobx-react-lite';
-import React, { useContext, useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
-
-import { AppContext } from './AppContext';
-
-const CatalogSubheadings = observer(() => {
-    const { basket } = useContext(AppContext);
-    const [isVisible, setIsVisible] = useState('');
-
-    useEffect(() => {
-        setIsVisible(() => (basket.isObjectTypeLine !== null ? true : false));
-    }, [basket.isObjectTypeLine]);
-
+import React from 'react';
+const CatalogSubheadings = () => {
     return (
-        <tr
-            style={{
-                display: isVisible ? 'table-row' : 'none',
-            }}
-        >
-            <td colSpan={3} className="align-bottom">
-                <Form.Text>Варианты расчёта количества единиц измерения:</Form.Text>
+        <tr>
+            <td colSpan={3} className="small text-muted align-bottom">
+                Варианты расчёта количества единиц измерения:
             </td>
-            <td className="align-bottom text-center">
-                <Form.Text>Ед. изм.</Form.Text>
-            </td>
-            <td className="align-bottom text-center">
-                <Form.Text>Количество</Form.Text>
-            </td>
-            <td className="align-bottom text-center">
-                <Form.Text>Цена</Form.Text>
+            <td className="small text-muted align-bottom text-center">Ед. изм.</td>
+            <td className="small text-muted align-bottom text-center">Количество</td>
+            <td className="small text-muted align-bottom text-center">
+                Цена <span className="text-danger">*</span>
             </td>
         </tr>
     );
-});
+};
 
 export default CatalogSubheadings;

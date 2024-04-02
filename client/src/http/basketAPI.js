@@ -7,8 +7,18 @@ const basketAPI = {
         return data;
     },
 
+    async fetchLink(id) {
+        const { data } = await guestInstance.get(`basket/get_link/${id}`);
+        return data;
+    },
+
+    async createLink() {
+        const { data } = await guestInstance.put(`basket/create_link`);
+        return data;
+    },
+
     async updateParams(params) {
-        const { data } = await guestInstance.put('basket/project_params', params);
+        const { data } = await guestInstance.put('basket/params', params);
         return data;
     },
 
