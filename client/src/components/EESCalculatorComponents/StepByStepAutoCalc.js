@@ -3,15 +3,14 @@ import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import styles from './styles.css';
-
-import ObjectTypeSelectionMenu from './EESCalculatorComponents/ObjectTypeSelectionMenu.js';
-import ScenarioSelectionMenu from './EESCalculatorComponents/ScenarioSelectionMenu.js';
-import { AppContext } from './AppContext.js';
-import basketAPI from '../http/basketAPI.js';
-import { quantityCalculators } from '../calculators/quantityCalculators.js';
-import { fetchVariantsByIds } from '../http/catalogAPI.js';
-import RegionSelectionMenu from './EESCalculatorComponents/RegionsSelectionMenu.js';
+import ObjectTypeSelectionMenu from './ObjectTypeSelectionMenu.js';
+import ScenarioSelectionMenu from './ScenarioSelectionMenu.js';
+import { AppContext } from '../AppContext.js';
+import basketAPI from '../../http/basketAPI.js';
+import { quantityCalculators } from '../../calculators/quantityCalculators.js';
+import { fetchVariantsByIds } from '../../http/catalogAPI.js';
+import RegionSelectionMenu from './RegionsSelectionMenu.js';
+import CalculationInfoShortList from './CalculationInfoShortList.js';
 
 const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
     const { EESCalculator, catalog } = useContext(AppContext);
@@ -41,13 +40,14 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                     ...EESCalculator.quantityCalculatorParams,
                     regionId: EESCalculator.regionId,
                     variants: variantsListForBasket,
+                    calcData: EESCalculator.quantityCalculatorParams,
                 });
             })
             .catch((error) =>
                 console.error(`Appending in basket variants list error: ${error}`)
             )
             .then((data) => {
-                catalog.projectParams = data;
+                catalog.calcData = data.calcData;
                 catalog.projectVariants = data.basketVariants;
                 catalog.regionId = data.regionId;
             })
@@ -57,7 +57,7 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
 
     const handleHide = () => {
         setIsShow(false);
-        EESCalculator.params = catalog.projectParams;
+        EESCalculator.quantityCalculatorParams = catalog.calcData;
         EESCalculator.regionId = null;
         setStepNumber(1);
     };
@@ -87,8 +87,21 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                 return <ScenarioSelectionMenu />;
             case 4:
                 return (
-                    <div style={{ fontSize: '1.2em' }}>
-                        <p>
+                    <div>
+                        <p className="fw-bold mb-1">Результаты расчёта (коротко)</p>
+
+                        <CalculationInfoShortList />
+
+                        <p className="mt-3 mb-2">
+                            Для просмотра полного перечня исследований и их обоснований,
+                            формирования запроса на коммерческое предложение, формирования
+                            коммерческого предложения, технического задания и программы
+                            изысканий, ссылки на расчёт перейдите в проект изысканий.
+                        </p>
+                        <p className="mt-1">
+                            Для для редактирования состава работ перейдите в конструктор.
+                        </p>
+                        {/* <p>
                             На основании результатов расчёта вы можете сформировать
                             техническое задание и запрос коммерческого предложения (КП),
                             запросить КП можно у представленных на сайте подрядчиков, либо
@@ -101,7 +114,7 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                             расположения участка. При необходимости, они смогут
                             скорректировать состав работ с учётом требований местной
                             экспертизы.
-                        </p>
+                        </p> */}
                     </div>
                 );
             default:
@@ -158,16 +171,28 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
                 );
             case 4:
                 return (
-                    <Link
-                        to="/project"
-                        className="btn btn-primary btn-lg"
-                        onClick={() => {
-                            EESCalculator.clearParams();
-                            EESCalculator.regionId = null;
-                        }}
-                    >
-                        Перейти к результатам расчёта
-                    </Link>
+                    <>
+                        <Link
+                            to="/project"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                EESCalculator.clearParams();
+                                EESCalculator.regionId = null;
+                            }}
+                        >
+                            В конструктор
+                        </Link>
+                        <Link
+                            to="/project"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                EESCalculator.clearParams();
+                                EESCalculator.regionId = null;
+                            }}
+                        >
+                            В проект изысканий
+                        </Link>
+                    </>
                 );
             default:
                 return null;
@@ -179,7 +204,7 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
             show={isShow}
             onHide={handleHide}
             size="lg"
-            fullscreen="sm-down"
+            fullscreen="lg-down"
             backdrop="static"
             keyboard={false}
             scrollable={true}
@@ -197,11 +222,11 @@ const StepByStepAutoCalc = observer(({ isShow, setIsShow }) => {
             <Modal.Body>{getContentByStepNumber(stepNumber)}</Modal.Body>
 
             <Modal.Footer
-                className={
-                    stepNumber === 4
-                        ? 'd-flex justify-content-center'
-                        : 'd-flex justify-content-between'
-                }
+            // className={
+            //     stepNumber === 4
+            //         ? 'd-flex justify-content-center'
+            //         : 'd-flex justify-content-between'
+            // }
             >
                 {getButtonsByStepNumber(stepNumber)}
             </Modal.Footer>

@@ -42,7 +42,13 @@ const ScenarioSelectionMenu = observer(() => {
     };
 
     return (
-        <div className={EESCalculator.params.isObjectTypeLine !== null ? '' : 'd-none'}>
+        <div
+            className={
+                EESCalculator.quantityCalculatorParams.isObjectTypeLine !== null
+                    ? ''
+                    : 'd-none'
+            }
+        >
             <Form.Group className={'mt-2 mb-2'}>
                 <p className="mb-1">Выберите сценарий использования участка:</p>
                 {getScenariosRadioBoxList(EESCalculator.curScenarios)}

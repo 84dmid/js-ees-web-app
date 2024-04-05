@@ -30,6 +30,10 @@ const ProjectTools = () => {
         setIsShowingCreatingLinkModal(true);
     };
 
+    const ButtonClassName = 'mb-2 w-100 text-start';
+    const ButtonFontSize = '1.1em';
+    const ButtonVariant = 'outline-primary';
+
     return (
         <>
             {isShowingCreatingLinkModal && (
@@ -52,67 +56,87 @@ const ProjectTools = () => {
                 />
             )}
 
-            <div>
+            <div className="pt-2">
                 {/* <p className="fs-4 lead">
                     <strong>Панель инструментов</strong>
                 </p> */}
 
                 {/* <div></div> */}
-                <p className="mt-3 mb-0 small text-muted">Для заказчика</p>
+                {/* <p className="mt-3 mb-0 small text-muted">Для заказчика</p> */}
 
                 {/* <Button variant="outline-secondary" className="mb-2 mt-2 w-100">
                     Сформировать запрос на коммерческое предложение
                 </Button> */}
-                <Button variant="outline-danger" className="mb-2 mt-3 w-100">
-                    Запросить коммерческое предложение (КП)
+                <Button
+                    style={{ fontSize: '1.2em' }}
+                    className="mb-3 w-100 text-start"
+                    // size="lg"
+                >
+                    Запросить КП
                 </Button>
-                <Button variant="outline-primary" className="mb-2 mt-2 w-100">
+                {/* <Button variant="outline-primary" className="mb-2 mt-2 w-100">
                     Сформировать ссылку на запрос КП
+                </Button> */}
+                <Button
+                    style={{ fontSize: ButtonFontSize }}
+                    onClick={showTechnicalTaskEditor}
+                    className={ButtonClassName}
+                    variant={ButtonVariant}
+                >
+                    Сформировать задание
                 </Button>
                 <Button
-                    onClick={showTechnicalTaskEditor}
-                    variant="outline-primary"
-                    className="mb-2 mt-2 w-100"
+                    style={{ fontSize: ButtonFontSize }}
+                    onClick={showProgramEditor}
+                    className={ButtonClassName}
+                    variant={ButtonVariant}
                 >
-                    Сформировать задание на изыскания
+                    Сформировать программу
                 </Button>
-                {/* <Button variant="outline-secondary" className="mb-2 mt-2 w-100">
+                {/* <Button variant="outline-secondary" className={ButtonClassName}>
                     Разместить запрос КП на тендере
                 </Button> */}
                 <Button
-                    variant="outline-primary"
-                    className="mb-2 mt-2 w-100"
+                    style={{ fontSize: ButtonFontSize }}
+                    className={ButtonClassName}
                     onClick={getSurveyCalculationLink}
+                    variant={ButtonVariant}
                 >
                     Получить ссылку на проект
                 </Button>
                 {/* <ExampleDOCX /> */}
-                {/* <Button variant="outline-primary" className="mb-2 mt-2 w-100">
+                {/* <Button variant="outline-primary" className={ButtonClassName}>
                     Скачать задание на изыскания
                 </Button> */}
-            </div>
-            <div>
-                <p className="mt-3 mb-0 small text-muted">Для подрядчика</p>
+                {/* </div>
+            <div> */}
+                {/* <p className="mt-3 mb-0 small text-muted">Для подрядчика</p> */}
 
-                <Button variant="outline-primary" className="mb-2 mt-2 w-100">
+                <Button
+                    style={{ fontSize: ButtonFontSize }}
+                    className={ButtonClassName}
+                    variant={ButtonVariant}
+                >
                     Сформировать КП
                 </Button>
-                <Button variant="outline-secondary" className="mb-2 mt-2 w-100">
-                    Получить КП
-                </Button>
-                <Button
-                    onClick={showProgramEditor}
-                    variant="outline-secondary"
-                    className="mb-2 mt-2 w-100"
+                {/* <Button
+                    style={{ fontSize: ButtonFontSize }}
+                    className={ButtonClassName}
+                    variant={ButtonVariant}
                 >
-                    Сформировать программу изысканий
-                </Button>
-                <Button variant="outline-secondary" className="mb-2 mt-2 w-100">
-                    Скачать программу изысканий
-                </Button>
+                    Получить КП
+                </Button> */}
 
-                <Button variant="outline-secondary" className="mb-2 mt-2 w-100">
-                    Сформировать таблицы для тома ИЭИ
+                {/* <Button variant="outline-secondary" className={ButtonClassName}>
+                    Скачать программу изысканий
+                </Button> */}
+
+                <Button
+                    style={{ fontSize: ButtonFontSize }}
+                    className={ButtonClassName}
+                    variant={ButtonVariant}
+                >
+                    Сформировать таблицы
                 </Button>
             </div>
         </>

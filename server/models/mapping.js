@@ -6,65 +6,47 @@ const { DataTypes } = database;
 
 const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
     email: { type: DataTypes.STRING, unique: true },
     phone: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING, defaultValue: 'USER' },
+    // contractor or customer data
+    name: { type: DataTypes.TEXT },
+    legalAddress: { type: DataTypes.TEXT },
+    postalAddress: { type: DataTypes.TEXT },
+    contactPhone: { type: DataTypes.STRING },
+    contactEmail: { type: DataTypes.STRING },
+    signatoryPosition: { type: DataTypes.STRING },
+    signatorySurname: { type: DataTypes.STRING },
+    signatoryName: { type: DataTypes.STRING },
+    signatoryPatronymic: { type: DataTypes.STRING },
+    TIN: { type: DataTypes.STRING }, // ИНН (TIN - Taxpayer Identification Number)
+    TRRC: { type: DataTypes.STRING }, // КПП (TRRC - Tax Registration Reason Code)
+    PSRN: { type: DataTypes.STRING }, // ОГРН (PSRN - Primary State Registration Number)
+    BankAccount: { type: DataTypes.STRING }, // р/с (Bank Account - Account Number)
+    Bank: { type: DataTypes.TEXT }, // Банк (Bank): PJSC "ChelyabInvestBank"
+    BIC: { type: DataTypes.TEXT }, // БИК (BIC - Bank Identification Code)
+    CorrespondentAccount: { type: DataTypes.TEXT }, // к/с (Correspondent Account - Correspondent Account Number)
 });
 
-const Role = sequelize.define('role', {
-    name: { type: DataTypes.STRING, primaryKey: true },
+const Competence = sequelize.define('competence', {
+    id: { type: DataTypes.STRING, primaryKey: true },
+    order: { type: DataTypes.INTEGER, allowNull: false },
+    name: { type: DataTypes.TEXT },
+    abbr: { type: DataTypes.STRING },
 });
 
-const UserRole = sequelize.define('user_role', {
-    userId: { type: DataTypes.INTEGER, references: { model: User, key: 'id' } },
-    roleName: { type: DataTypes.STRING, references: { model: Role, key: 'name' } },
-});
-
-Role.belongsToMany(User, {
-    through: UserRole,
-    foreignKey: 'roleName',
-});
-User.belongsToMany(Role, { through: UserRole, foreignKey: 'userId' });
-
-const Project = sequelize.define('project', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
-    comment: { type: DataTypes.STRING },
-    address: { type: DataTypes.STRING },
-    lendArea: { type: DataTypes.STRING },
-    lendExtension: { type: DataTypes.STRING },
-    objectType: { type: DataTypes.STRING },
-    customer: { type: DataTypes.STRING },
-    status: { type: DataTypes.STRING },
-    price: { type: DataTypes.INTEGER },
-});
-
-const ProjectSurvey = sequelize.define('projectSurvey', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    order: { type: DataTypes.INTEGER },
-    survey: { type: DataTypes.STRING },
-    variant: { type: DataTypes.STRING },
-    unit: { type: DataTypes.STRING },
-    price: { type: DataTypes.INTEGER },
-    quantity: { type: DataTypes.INTEGER },
-    subcategory: { type: DataTypes.STRING },
-    category: { type: DataTypes.STRING },
-    objectType: { type: DataTypes.STRING },
-    normDoc: { type: DataTypes.STRING },
-    justification: { type: DataTypes.STRING },
-    handler: { type: DataTypes.STRING },
-    buildType: { type: DataTypes.STRING },
-});
-
-const ProjectSurveyProp = sequelize.define('projectSurveyProp', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    order: { type: DataTypes.INTEGER },
-    description: { type: DataTypes.STRING },
-    unit: { type: DataTypes.STRING },
-    price: { type: DataTypes.INTEGER },
-    quantity: { type: DataTypes.INTEGER },
+const SRODataVariants = ['SROMember', 'UsePartnerSRO'];
+const UserCompetence = sequelize.define('userCompetence', {
+    SROData: {
+        type: DataTypes.STRING,
+        validate: {
+            isIn: {
+                args: [SRODataVariants],
+                msg: `Invalid linkRole. Valid roles are: ${SRODataVariants.join(', ')}.`,
+            },
+        },
+    },
 });
 
 const Variant = sequelize.define('variant', {
@@ -135,7 +117,7 @@ const ProjectLink = sequelize.define('projectLink', {
     generalData: { type: DataTypes.JSONB },
     variants: { type: DataTypes.JSONB },
     // customerData
-    customerName: { type: DataTypes.STRING },
+    customerName: { type: DataTypes.TEXT },
     customerCompanyName: { type: DataTypes.STRING },
     customerLegalAddress: { type: DataTypes.STRING },
     customerPostalAddress: { type: DataTypes.STRING },
@@ -145,7 +127,7 @@ const ProjectLink = sequelize.define('projectLink', {
     customerSignatorySurname: { type: DataTypes.STRING },
     customerSignatoryName: { type: DataTypes.STRING },
     customerSignatoryPatronymic: { type: DataTypes.STRING },
-    customerTIN: { type: DataTypes.INTEGER },
+    customerTIN: { type: DataTypes.STRING },
     // contractorData
     contractorName: { type: DataTypes.STRING },
     contractorCompanyName: { type: DataTypes.STRING },
@@ -157,7 +139,7 @@ const ProjectLink = sequelize.define('projectLink', {
     contractorSignatorySurname: { type: DataTypes.STRING },
     contractorSignatoryName: { type: DataTypes.STRING },
     contractorSignatoryPatronymic: { type: DataTypes.STRING },
-    contractorTIN: { type: DataTypes.INTEGER },
+    contractorTIN: { type: DataTypes.STRING },
 });
 
 const ProjectLinkRecipient = sequelize.define('project_link_recipient', {
@@ -190,19 +172,6 @@ const Survey = sequelize.define('survey', {
     name: { type: DataTypes.STRING, allowNull: false },
 });
 
-// const ObjectType = sequelize.define('objectType', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//     order: { type: DataTypes.INTEGER, allowNull: false },
-//     name: { type: DataTypes.STRING, allowNull: false },
-//     description: { type: DataTypes.STRING },
-// });
-
-// const Handler = sequelize.define('handler', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-//     description: { type: DataTypes.STRING, unique: true, allowNull: false },
-// });
-
 const VariantProp = sequelize.define('variantProp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     order: { type: DataTypes.INTEGER, allowNull: false },
@@ -229,14 +198,8 @@ const Region = sequelize.define('regions', {
 
 const ScenarioVariant = sequelize.define('scenarioVariant', {});
 
-User.hasMany(Project, { onDelete: 'CASCADE' });
-Project.belongsTo(User);
-
-Project.hasMany(ProjectSurvey, { onDelete: 'CASCADE' });
-ProjectSurvey.belongsTo(Project);
-
-ProjectSurvey.hasMany(ProjectSurveyProp, { onDelete: 'CASCADE' });
-ProjectSurveyProp.belongsTo(ProjectSurvey);
+User.belongsToMany(Competence, { through: UserCompetence });
+Competence.belongsToMany(User, { through: UserCompetence });
 
 // many-to-many
 Variant.belongsToMany(Basket, { through: BasketVariant, onDelete: 'CASCADE' });
@@ -255,12 +218,6 @@ Survey.belongsTo(Subcategory);
 
 Survey.hasMany(Variant, { onDelete: 'RESTRICT' });
 Variant.belongsTo(Survey);
-
-// ObjectType.hasMany(Variant, { onDelete: 'RESTRICT' });
-// Variant.belongsTo(ObjectType);
-
-// Handler.hasMany(Variant, { onDelete: 'RESTRICT' });
-// Variant.belongsTo(Handler);
 
 Variant.hasMany(VariantProp, { onDelete: 'CASCADE' });
 VariantProp.belongsTo(Variant);
@@ -296,18 +253,14 @@ User.belongsToMany(ProjectLink, { through: ProjectLinkRecipient, foreignKey: 'us
 
 export {
     User,
-    UserRole,
-    Project,
-    ProjectSurvey,
-    ProjectSurveyProp,
+    Competence,
+    UserCompetence,
     Variant,
     Basket,
     BasketVariant,
     Category,
     Subcategory,
     Survey,
-    // ObjectType,
-    // Handler,
     VariantProp,
     Scenario,
     ScenarioVariant,

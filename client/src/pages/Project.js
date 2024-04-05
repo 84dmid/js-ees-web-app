@@ -16,7 +16,7 @@ const Project = observer(() => {
             .clear()
             .catch((error) => console.error(`Clearing basket error: ${error}`))
             .then((data) => {
-                catalog.projectParams = data;
+                catalog.calcData = data;
                 catalog.projectVariants = data.basketVariants;
             });
     };
@@ -26,13 +26,6 @@ const Project = observer(() => {
             <Container fluid>
                 <h1>Проект изысканий</h1>
                 <p>Проект не заполнен, произведите расчёт состав изысканий.</p>
-
-                <p>
-                    При первом посещении сайта рекомендуем воспользоваться пошаговой
-                    версией авторасчёта состава изысканий, для этого перейдите на{' '}
-                    <Link>главную страницу</Link>. Для более опытных пользователей
-                    рекомендуем <Link>конструктор изысканий</Link>.
-                </p>
             </Container>
         );
     }
@@ -40,10 +33,10 @@ const Project = observer(() => {
     return (
         <Container fluid>
             <Row>
-                <Col lg={2} className="mb-3 bg-body-tertiary">
+                <Col lg={3} className="mb-3 bg-body-tertiary">
                     {<ProjectTools />}
                 </Col>
-                <Col lg={10} className="mb-3">
+                <Col lg={9} className="mb-3">
                     <Row>
                         <Col lg={5}>
                             <h1>Проект изысканий</h1>

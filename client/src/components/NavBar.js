@@ -248,6 +248,9 @@ const NavBar = observer(() => {
                                     </div>
                                 </NavLink>
 
+                                <NavLink to="/contractors" className="nav-link pt-1 pb-1">
+                                    Подрядчики
+                                </NavLink>
                                 <NavLink
                                     to="/office_processing"
                                     className="nav-link pt-1 pb-1"
@@ -257,9 +260,6 @@ const NavBar = observer(() => {
                                 </NavLink>
                                 <NavLink to="/tender" className="nav-link pt-1 pb-1">
                                     Тендер
-                                </NavLink>
-                                <NavLink to="/contractors" className="nav-link pt-1 pb-1">
-                                    Подрядчики
                                 </NavLink>
                                 <NavLink
                                     to="/cooperation"

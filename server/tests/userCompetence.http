@@ -1,0 +1,27 @@
+################ Тесты для пользователя #################
+
+
+
+### Получить все компетенции пользователя (для пользователя)
+GET /api/user/competence/get_all HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwMTQzNzc5M30.c1UKaNA4CcaFEcHArRAoGxPK2dYOuFEvxRSr7JduhKw
+
+### Создать новую компетенцию пользователя (для пользователя)
+POST /api/user/competence/create HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwMTQzNzc5M30.c1UKaNA4CcaFEcHArRAoGxPK2dYOuFEvxRSr7JduhKw
+Cookie: basketId=s%3A16.iSac0fWrebrE64iRKDOcvPdxLmnCyz96JGiKBb3xWKg
+Content-type: application/json; charset=utf-8
+
+{
+    "id": "EES",
+    "name": "Экологические изыскания",
+    "shortName": "ИЭЭИ"
+}
+
+
+### Удалить компетенцию пользователя по id (для пользователя)
+DELETE /api/user/competence/delete/38 HTTP/1.1
+Host: localhost:7000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyQG1haWwucnUiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwMTQzNzc5M30.c1UKaNA4CcaFEcHArRAoGxPK2dYOuFEvxRSr7JduhKw

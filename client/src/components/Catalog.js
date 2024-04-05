@@ -5,21 +5,9 @@ import { Link } from 'react-router-dom';
 
 import { AppContext } from './AppContext.js';
 import CategoryItem from './CategoryItem.js';
-import basketAPI from '../http/basketAPI.js';
 
 const Catalog = observer(() => {
-    const { catalog, EESCalculator } = useContext(AppContext);
-
-    // const clearBasket = () => {
-    //     basketAPI
-    //         .clear()
-    //         .catch((error) => console.error(`Clearing basket error: ${error}`))
-    //         .then((data) => {
-    //             EESCalculator.params = catalog.projectParams = data;
-    //             EESCalculator.regionId = catalog.regionId = data.regionId;
-    //             catalog.projectVariants = data.basketVariants;
-    //         });
-    // };
+    const { catalog } = useContext(AppContext);
 
     const categoryList = catalog.catalog.map((category) => {
         return (
@@ -71,35 +59,13 @@ const Catalog = observer(() => {
 
     return (
         <>
-            {/* <Row>
-                <Col sm={7}>
-                    <h1>Конструктор состава изысканий</h1>
-                </Col>
-                <Col sm={5}>
-                    <Button
-                        onClick={clearBasket}
-                        variant="outline-primary"
-                        className="w-100"
-                        >
-                        Сбросить параметры расчёта и очистить проект
-                    </Button>
-                </Col>
-            </Row> */}
-            <h1>Конструктор состава изысканий</h1>
-            <p className="mt-0 mb-0">
-                <small>
-                    <span className="text-danger">*</span> Указаны средние цены по России,
-                    чтобы узнать точную стоимость необходимо запросить коммерческое
-                    предложение. Запросить КП можно либо у{' '}
-                    <Link to="/contractors">подрядчиков</Link>, представленных на сайте,
-                    либо получить ссылку на запрос и направить её в любую известную вам
-                    организацию. Подробнее на вкладке{' '}
-                    <Link to="/project">проект изысканий</Link>.
-                </small>
+            <h1>Конструктор изысканий</h1>
+            {/* <p className="mt-1 mb-2">
+                <span className="text-danger">*</span> Для уточнения стоимости и объёмов
+                работ необходимо <Link>запросить коммерческое предложение</Link>.
             </p>
 
-            <h2>Каталог видов исследований и вариантов определения объёмов работ</h2>
-            <p className="mt-0 mb-1"></p>
+            <h2>Каталог видов исследований и вариантов определения объёмов работ</h2> */}
             <Table size="sm" className="mb-0">
                 <tbody>{categoryList}</tbody>
             </Table>

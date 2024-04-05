@@ -2,6 +2,14 @@ import { makeAutoObservable } from 'mobx';
 import { getPriceAndDefaultQuantity } from '../calculators/variantPriceHandler';
 import { quantityCalculators } from '../calculators/quantityCalculators';
 
+const initCalcData = {
+    isObjectTypeLine: null,
+    plotAreaInSqM: null,
+    testingSitesNumberPerFiveHa: null,
+    trackLengthInM: null,
+    trackWidthInM: null,
+};
+
 const initProjectData = {
     // initFieldset
     workBasis: null,
@@ -158,6 +166,8 @@ class CatalogStore {
     _initCatalog = [];
     _initRegions = [];
 
+    _regionId = null;
+    _calcData = initCalcData;
     _generalData = initProjectData;
     _customerData = initCustomerData;
     _contractorData = initContractorData;
@@ -168,54 +178,71 @@ class CatalogStore {
     _projectVariantIds = new Set();
     _projectVariantQuantities = [];
 
-    _regionName = '';
-    _regionId = null;
-
-    _region = { id: null, name: '' };
-    _isObjectTypeLine = null;
-    _lendAreaInSqM = null;
-    _trackLengthInM = null;
-    _trackWidthInM = null;
-    _testingSitesNumberPerFiveHa = null;
-
     _showOnlyCheckedVariants = false;
     _showOnlyCheckedSurveys = false;
-
-    _surveyFilter = [];
-    _variantFilter = [];
 
     constructor() {
         makeAutoObservable(this);
     }
 
+    // initData;
+    get initCatalog() {
+        return this._initCatalog;
+    }
+    set initCatalog(initCatalog) {
+        this._initCatalog = initCatalog;
+    }
+
+    get initRegions() {
+        return this._initRegions;
+    }
+    set initRegions(initRegions) {
+        this._initRegions = initRegions;
+    }
+
+    //projectData
+    get regionId() {
+        return this._regionId;
+    }
+    set regionId(regionId) {
+        this._regionId = regionId;
+    }
+    get regionName() {
+        return this._initRegions.find((region) => region.id === this._regionId)?.name;
+    }
+
+    get calcData() {
+        return this._calcData;
+    }
+    set calcData(data) {
+        this._calcData = { ...initCalcData, ...data };
+    }
+
     get generalData() {
         return this._generalData;
     }
-
-    set generalData(info) {
-        this._generalData = info;
+    set generalData(data) {
+        this._generalData = data;
     }
 
     get customerData() {
         return this._customerData;
     }
-
-    set customerData(info) {
-        this._customerData = info;
+    set customerData(data) {
+        this._customerData = data;
     }
 
     get contractorData() {
         return this._contractorData;
     }
-
-    set contractorData(info) {
-        this._contractorData = info;
+    set contractorData(data) {
+        this._contractorData = data;
     }
 
+    // validation
     get projectValid() {
         return this._projectValid;
     }
-
     set projectValid(isValid) {
         this._projectValid = isValid;
     }
@@ -403,22 +430,6 @@ class CatalogStore {
         return { number, justification };
     }
 
-    get initCatalog() {
-        return this._initCatalog;
-    }
-
-    set initCatalog(initCatalog) {
-        this._initCatalog = initCatalog;
-    }
-
-    get initRegions() {
-        return this._initRegions;
-    }
-
-    set initRegions(initRegions) {
-        this._initRegions = initRegions;
-    }
-
     get catalog() {
         const getChecked = (variant) => {
             if (this._projectVariantIds.has(variant.id)) {
@@ -432,14 +443,11 @@ class CatalogStore {
             let checkedSurveyIds = new Set();
             return variants
                 .filter((variant) => {
-                    if (this.isObjectTypeLine !== null) {
-                        return (
-                            variant.isObjectTypeLine === this.isObjectTypeLine ||
-                            variant.isObjectTypeLine === null
-                        );
-                    } else {
-                        return false;
-                    }
+                    if (this._calcData.isObjectTypeLine === null) return false;
+                    return (
+                        variant.isObjectTypeLine === this._calcData.isObjectTypeLine ||
+                        variant.isObjectTypeLine === null
+                    );
                 })
                 .map((variant) => {
                     if (getChecked(variant)) {
@@ -447,7 +455,7 @@ class CatalogStore {
                     }
                     const quantity = this._getQuantity(
                         variant,
-                        this.projectParams,
+                        this._calcData,
                         this._projectVariants
                     );
                     return {
@@ -481,7 +489,7 @@ class CatalogStore {
                 .map((variant) => {
                     const quantity = this._getQuantity(
                         variant,
-                        this.projectParams,
+                        this._calcData,
                         this._projectVariants
                     );
                     return {
@@ -577,34 +585,6 @@ class CatalogStore {
         this._projectVariantQuantities = variantQuantities;
     }
 
-    get projectParams() {
-        return {
-            regionId: this._regionId,
-            isObjectTypeLine: this._isObjectTypeLine,
-            lendAreaInSqM: this._lendAreaInSqM,
-            trackLengthInM: this._trackLengthInM,
-            trackWidthInM: this._trackWidthInM,
-            testingSitesNumberPerFiveHa: this._testingSitesNumberPerFiveHa,
-        };
-    }
-
-    set projectParams(params) {
-        const {
-            regionId,
-            isObjectTypeLine,
-            lendAreaInSqM,
-            trackLengthInM,
-            trackWidthInM,
-            testingSitesNumberPerFiveHa,
-        } = params;
-        this._regionId = regionId;
-        this._isObjectTypeLine = isObjectTypeLine;
-        this._lendAreaInSqM = lendAreaInSqM;
-        this._trackLengthInM = trackLengthInM;
-        this._trackWidthInM = trackWidthInM;
-        this._testingSitesNumberPerFiveHa = testingSitesNumberPerFiveHa;
-    }
-
     get projectSurveyCount() {
         return this._projectVariants.length;
     }
@@ -623,61 +603,7 @@ class CatalogStore {
         }, 0);
     }
 
-    // projectParams
-
-    get regionId() {
-        return this._regionId;
-    }
-
-    set regionId(regionId) {
-        this._regionId = regionId;
-    }
-
-    get regionName() {
-        return this._initRegions.find((region) => region.id === this._regionId)?.name;
-    }
-
-    get isObjectTypeLine() {
-        return this._isObjectTypeLine;
-    }
-
-    set isObjectTypeLine(isObjectTypeLine) {
-        this._isObjectTypeLine = isObjectTypeLine;
-    }
-
-    get lendAreaInSqM() {
-        return this._lendAreaInSqM;
-    }
-
-    get trackLengthInM() {
-        return this._trackLengthInM;
-    }
-
-    get trackWidthInM() {
-        return this._trackWidthInM;
-    }
-
-    get testingSitesNumberPerFiveHa() {
-        return this._testingSitesNumberPerFiveHa;
-    }
-
-    set lendAreaInSqM(lendAreaInSqM) {
-        this._lendAreaInSqM = lendAreaInSqM;
-    }
-
-    set trackLengthInM(trackLengthInM) {
-        this._trackLengthInM = trackLengthInM;
-    }
-
-    set trackWidthInM(trackWidthInM) {
-        this._trackWidthInM = trackWidthInM;
-    }
-
-    set testingSitesNumberPerFiveHa(testingSitesNumberPerFiveHa) {
-        this._testingSitesNumberPerFiveHa = testingSitesNumberPerFiveHa;
-    }
-
-    ////////////////////////////
+    // filters
 
     get showOnlyCheckedVariants() {
         return this._showOnlyCheckedVariants;
@@ -705,6 +631,8 @@ class CatalogStore {
         this._showOnlyCheckedSurveys = !isShow;
         this._showOnlyCheckedVariants = !isShow;
     }
+
+    // printData
 
     get printData() {
         return [
@@ -883,7 +811,7 @@ class CatalogStore {
 
             {
                 dataName: 'Тип объекта капитального строительства',
-                data: this._isObjectTypeLine ? 'Линейный' : 'Нелинейный',
+                data: this._calcData.isObjectTypeLine ? 'Линейный' : 'Нелинейный',
                 isDocument: {
                     technicalTask: true,
                     program: true,
@@ -906,22 +834,27 @@ class CatalogStore {
                 },
             },
             {
-                dataName: this._isObjectTypeLine
-                    ? 'Протяжённость трассы изысканий'
+                dataName: this._calcData.isObjectTypeLine
+                    ? 'Протяжённость и площадь трассы изысканий'
                     : 'Площадь участка изысканий',
-                data: this._isObjectTypeLine
-                    ? `${+this._trackLengthInM / 1000} км`
-                    : `${+this._lendAreaInSqM / 10000} га`,
+                data: this._calcData.isObjectTypeLine
+                    ? `Протяженность: ${
+                          +this._calcData.trackLengthInM / 1000
+                      } км.\bПлощадь: ${
+                          (this._calcData.trackWidthInM * this._calcData.trackLengthInM) /
+                          10000
+                      } га.`
+                    : `${+this.calcData.plotAreaInSqM / 10000} га`,
                 isDocument: {
                     technicalTask: true,
                     program: true,
                 },
             },
             {
-                dataName: this._isObjectTypeLine
+                dataName: this._calcData.isObjectTypeLine
                     ? 'Данные о границах трассы (трасс), точках ее начала и окончания'
                     : 'Данные о границах участка изысканий',
-                data: this._isObjectTypeLine
+                data: this._calcData.isObjectTypeLine
                     ? this._generalData.boundariesTrackData
                     : this._generalData.boundariesAreaData,
                 isDocument: {

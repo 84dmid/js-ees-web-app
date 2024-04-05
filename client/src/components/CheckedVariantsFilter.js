@@ -32,7 +32,7 @@ const CheckedVariantsFilter = observer(() => {
                     catalog.showOnlyCheckedSurveys = true;
                 }}
                 checked={catalog.showOnlyCheckedSurveys}
-                label="Показать только отмеченные виды исследований"
+                label="Только отмеченные работы"
             />
             <Form.Check
                 name="surveyFilter"
@@ -42,7 +42,7 @@ const CheckedVariantsFilter = observer(() => {
                     catalog.showOnlyCheckedVariants = true;
                 }}
                 checked={catalog.showOnlyCheckedVariants}
-                label="Показать только отмеченные варианты"
+                label="Только отмеченные алгоритмы"
             />
         </Form.Group>
     );

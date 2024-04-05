@@ -34,6 +34,7 @@ const makePrettier = (basket) => {
         regionId: basket.regionId,
         basketVariants: basketVariants,
 
+        calcData: basket.calcData,
         generalData: basket.generalData,
         customerData: basket.customerData,
         contractorData: basket.contractorData,
@@ -183,15 +184,8 @@ class Basket {
     }
 
     async appendVariantsList(basketId, data) {
-        const {
-            isObjectTypeLine,
-            lendAreaInSqM,
-            trackLengthInM,
-            trackWidthInM,
-            testingSitesNumberPerFiveHa,
-            regionId,
-            variants = null,
-        } = data;
+        const { calcData, regionId, variants = null } = data;
+        console.log(calcData);
 
         const transaction = await sequelize.transaction();
         try {
@@ -216,11 +210,7 @@ class Basket {
             }
             await basket.update(
                 {
-                    isObjectTypeLine,
-                    lendAreaInSqM,
-                    trackLengthInM,
-                    trackWidthInM,
-                    testingSitesNumberPerFiveHa,
+                    calcData,
                     regionId,
                 },
                 { transaction }

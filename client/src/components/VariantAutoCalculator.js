@@ -19,7 +19,7 @@ const VariantAutoCalculator = observer(() => {
             .clear()
             .catch((error) => console.error(`Clearing basket error: ${error}`))
             .then((data) => {
-                EESCalculator.params = catalog.projectParams = data;
+                EESCalculator.quantityCalculatorParams = catalog.calcData = data;
                 EESCalculator.regionId = catalog.regionId = data.regionId;
                 catalog.projectVariants = data.basketVariants;
             });
@@ -46,13 +46,14 @@ const VariantAutoCalculator = observer(() => {
                     ...EESCalculator.quantityCalculatorParams,
                     regionId: EESCalculator.regionId,
                     variants: variantsListForBasket,
+                    calcData: EESCalculator.quantityCalculatorParams,
                 });
             })
             .catch((error) =>
                 console.error(`Appending in basket variants list error: ${error}`)
             )
             .then((data) => {
-                catalog.projectParams = data;
+                catalog.calcData = data.calcData;
                 catalog.projectVariants = data.basketVariants;
                 catalog.regionId = data.regionId;
             })
@@ -68,7 +69,11 @@ const VariantAutoCalculator = observer(() => {
         <Form
             className="mb-3"
             onSubmit={(event) =>
-                handleSubmit(event, EESCalculator.curScenario, EESCalculator.params)
+                handleSubmit(
+                    event,
+                    EESCalculator.curScenario,
+                    EESCalculator.quantityCalculatorParams
+                )
             }
         >
             <fieldset>
@@ -78,7 +83,9 @@ const VariantAutoCalculator = observer(() => {
                 <ScenarioSelectionMenu />
                 <div
                     className={
-                        EESCalculator.params.isObjectTypeLine !== null ? 'mt-3' : 'd-none'
+                        EESCalculator.quantityCalculatorParams.isObjectTypeLine !== null
+                            ? 'mt-3'
+                            : 'd-none'
                     }
                 >
                     <Button

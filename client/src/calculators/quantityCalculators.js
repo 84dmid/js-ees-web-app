@@ -15,9 +15,18 @@ const getTextByNumber = (number) => {
     return names[number];
 };
 
+const getLendAreaInSqMByCalcParams = (params) => {
+    const { isObjectTypeLine, plotAreaInSqM, trackLengthInM, trackWidthInM } = params;
+
+    if (isObjectTypeLine) return trackLengthInM * trackWidthInM;
+    if (!isObjectTypeLine) return plotAreaInSqM;
+};
+
 const quantityCalculators = {
     // МЭД-гамма излучения на участке (Medical Gamma Radiation)
-    MED_gamma_lend({ lendAreaInSqM }) {
+    MED_gamma_lend(params) {
+        const lendAreaInSqM = getLendAreaInSqMByCalcParams(params);
+
         if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
         let numberPoints;
 
@@ -37,7 +46,9 @@ const quantityCalculators = {
     },
 
     // ППР на участке (Radon Flux Density)
-    RnFP_lend({ lendAreaInSqM }) {
+    RnFP_lend(params) {
+        const lendAreaInSqM = getLendAreaInSqMByCalcParams(params);
+
         if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
         let numberPoints;
 
@@ -69,7 +80,11 @@ const quantityCalculators = {
     },
 
     // Химическое загрязнение по ГОСТ, ЕРН, биология по минимуму, токсикология верхнего слоя грунта (Contamination Level)
-    CL_top_layer_soil_not_line_object({ lendAreaInSqM, testingSitesNumberPerFiveHa }) {
+    CL_top_layer_soil_not_line_object(params) {
+        if (params.isObjectTypeLine === true) return 0;
+        const lendAreaInSqM = getLendAreaInSqMByCalcParams(params);
+        const { testingSitesNumberPerFiveHa } = params;
+
         if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
         const areaInHa = lendAreaInSqM / 10000;
 
@@ -92,10 +107,11 @@ const quantityCalculators = {
     },
 
     // Биологическое загрязнение по минимуму
-    BCL_minimum_top_layer_soil_not_line_object({
-        lendAreaInSqM,
-        testingSitesNumberPerFiveHa,
-    }) {
+    BCL_minimum_top_layer_soil_not_line_object(params) {
+        if (params.isObjectTypeLine === true) return 0;
+        const lendAreaInSqM = getLendAreaInSqMByCalcParams(params);
+        const { testingSitesNumberPerFiveHa } = params;
+
         if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
 
         const areaInHa = lendAreaInSqM / 10000;
@@ -119,7 +135,11 @@ const quantityCalculators = {
     },
 
     // Биологическое загрязнение верхнего слоя грунта по ГОСТ (Biological Contamination Level)
-    BCL_top_layer_soil_not_line_object({ lendAreaInSqM, testingSitesNumberPerFiveHa }) {
+    BCL_top_layer_soil_not_line_object(params) {
+        if (params.isObjectTypeLine === true) return 0;
+        const lendAreaInSqM = getLendAreaInSqMByCalcParams(params);
+        const { testingSitesNumberPerFiveHa } = params;
+
         if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
 
         const areaInHa = lendAreaInSqM / 10000;
@@ -244,9 +264,9 @@ const quantityCalculators = {
     },
 
     // Одна единица измерения на один гектар
-    one_unit_by_one_hectare({ lendAreaInSqM }) {
-        if (!lendAreaInSqM || lendAreaInSqM <= 0) return 0;
-        const areaHec = lendAreaInSqM / 10000;
+    one_unit_by_one_hectare({ plotAreaInSqM }) {
+        if (!plotAreaInSqM || plotAreaInSqM <= 0) return 0;
+        const areaHec = plotAreaInSqM / 10000;
         const numberUnit = Math.ceil(areaHec);
         return numberUnit;
     },

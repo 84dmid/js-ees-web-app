@@ -35,7 +35,15 @@ const App = observer(() => {
                             user.login(userData);
                         }
                         catalog.initCatalog = catalogData;
+                        catalog.initRegions = EESCalculator.initRegions = regionsData;
+                        EESCalculator.initScenarios = scenariosData;
 
+                        catalog.calcData = EESCalculator.quantityCalculatorParams =
+                            basketData.calcData;
+
+                        catalog.projectVariants = basketData.basketVariants;
+
+                        catalog.regionId = basketData.regionId;
                         catalog.generalData = {
                             ...catalog.generalData,
                             ...basketData.generalData,
@@ -49,15 +57,7 @@ const App = observer(() => {
                             ...basketData.contractorData,
                         };
 
-                        catalog.projectParams = basketData;
-                        catalog.projectVariants = basketData.basketVariants;
-                        catalog.regionId = basketData.regionId;
-
                         regionEditor.regions = regionsData;
-                        catalog.initRegions = EESCalculator.initRegions = regionsData;
-
-                        EESCalculator.initScenarios = scenariosData;
-                        EESCalculator.regions = regions;
                     }
                 )
             )

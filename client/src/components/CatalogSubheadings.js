@@ -3,7 +3,7 @@ const CatalogSubheadings = () => {
     return (
         <tr>
             <td colSpan={3} className="small text-muted align-bottom">
-                Варианты расчёта количества единиц измерения:
+                Алгоритмы расчёта объёма работ:
             </td>
             <td className="small text-muted align-bottom text-center">Ед. изм.</td>
             <td className="small text-muted align-bottom text-center">Количество</td>

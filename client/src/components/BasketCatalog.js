@@ -5,13 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { AppContext } from './AppContext.js';
 import BasketCategoryItem from './BasketCategoryItem.js';
-
-function formatNumberWithSpaces(number) {
-    return number.toLocaleString('ru-RU', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    });
-}
+import CalculationInfoShortList from './EESCalculatorComponents/CalculationInfoShortList.js';
 
 const BasketCatalog = observer(() => {
     const { catalog } = useContext(AppContext);
@@ -25,33 +19,6 @@ const BasketCatalog = observer(() => {
             />
         );
     });
-
-    let projectParams;
-    if (catalog.isObjectTypeLine === true) {
-        projectParams = (
-            <>
-                <li className="mb-1">
-                    Протяженность трассы изысканий –{' '}
-                    <b>{+catalog.trackLengthInM / 1000} км</b>.
-                </li>
-                <li className="mb-1">
-                    Ширина трассы изысканий – <b>{+catalog.trackWidthInM} м</b>.
-                </li>
-                <li className="mb-1">
-                    Площадь трассы изысканий – <b>{+catalog.lendAreaInSqM / 10000} га</b>.
-                </li>
-            </>
-        );
-    } else if (catalog.isObjectTypeLine === false) {
-        projectParams = (
-            <>
-                <li className="mb-1">
-                    Площадь участка изысканий – <b>{+catalog.lendAreaInSqM / 10000} га</b>
-                    .
-                </li>
-            </>
-        );
-    }
 
     const getPlannedSurveysTable = (data, tableName) => {
         let curCategoryNumber = 0;
@@ -224,54 +191,18 @@ const BasketCatalog = observer(() => {
 
     return (
         <>
-            <ul className="mt-2 mb-1">
-                <li className="mb-1">
-                    Ориентировочная стоимость –{' '}
-                    <b>{formatNumberWithSpaces(catalog.projectPrice)} ₽</b>.
-                </li>
-                <li className="mb-1">
-                    Количество видов работ – <b>{catalog.projectSurveyCount} шт</b>.
-                </li>
-                <li className="mb-1">
-                    Тип объекта строительства –{' '}
-                    <b>
-                        {catalog.isObjectTypeLine === null
-                            ? 'не выбран'
-                            : catalog.isObjectTypeLine
-                            ? 'линейный'
-                            : 'нелинейный'}
-                    </b>
-                    .
-                </li>
-                {projectParams}
-                <li className="mb-1">
-                    Регион – <b>{catalog.regionName}</b>.
-                </li>
-            </ul>
-            <div
-            // className="d-none d-sm-inline"
-            >
-                <p className="mt-1 mb-2">
-                    {/* <small>
-                        <span className="text-danger">*</span> Указаны ориентировочные
-                        цены, чтобы узнать точную стоимость необходимо{' '}
-                        <Link>запросить коммерческое предложение (КП)</Link> у
-                        представленных на сайте <Link to="/contractors">подрядчиков</Link>
-                        , либо получить ссылку на запрос КП и направить её в любую
-                        известную вам организацию.
-                    </small> */}
-                    {/* <small> */}
-                    <span className="text-danger">*</span> Для уточнения стоимости и
-                    объёмов работ необходимо{' '}
-                    <Link>запросить коммерческое предложение</Link>.{/* </small> */}
-                </p>
-                <h2 className="mb-2">Состав инженерно-экологических изысканий (ИЭИ)</h2>
-                <Table bordered size="sm" className="d-none d-sm-inline mb-0">
-                    <tbody>{categoryList}</tbody>
-                </Table>
-                <div className="d d-sm-none">
-                    {getPlannedSurveysTable(catalog.projectCatalog, 'small')}
-                </div>
+            <CalculationInfoShortList />
+
+            <p className="mt-1 mb-2">
+                <span className="text-danger">*</span> Для уточнения стоимости и объёмов
+                работ необходимо <Link>запросить коммерческое предложение</Link>.
+            </p>
+            <h2 className="mb-2">Состав инженерно-экологических изысканий (ИЭИ)</h2>
+            <Table bordered size="sm" className="d-none d-sm-inline mb-0">
+                <tbody>{categoryList}</tbody>
+            </Table>
+            <div className="d d-sm-none">
+                {getPlannedSurveysTable(catalog.projectCatalog, 'small')}
             </div>
         </>
     );
